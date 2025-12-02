@@ -14,12 +14,51 @@ export const BACKGROUND_CATEGORIES = [
   { id: 'forest', label: { ko: '숲', en: 'Forest' } }
 ];
 
+/**
+ * Build optimized image URL from Unsplash raw URL
+ * @param {string} rawUrl - The raw Unsplash URL
+ * @param {object} options - Image options
+ * @returns {string} Optimized image URL
+ */
+export const buildImageUrl = (rawUrl, options = {}) => {
+  if (!rawUrl) return null;
+
+  const {
+    width = window.innerWidth,
+    height = window.innerHeight,
+    quality = 100,
+    fit = 'crop',
+    dpr = window.devicePixelRatio || 1
+  } = options;
+
+  // Calculate actual dimensions based on device pixel ratio (for retina displays)
+  // Cap DPR at 2 to balance quality and performance
+  const effectiveDpr = Math.min(dpr, 2);
+  const actualWidth = Math.round(width * effectiveDpr);
+  const actualHeight = Math.round(height * effectiveDpr);
+
+  // Build URL with parameters
+  const params = new URLSearchParams({
+    w: actualWidth,
+    h: actualHeight,
+    q: quality,
+    fit: fit,
+    auto: 'format' // Auto-select best format (WebP if supported)
+  });
+
+  // Handle URL that might already have parameters
+  const separator = rawUrl.includes('?') ? '&' : '?';
+  return `${rawUrl}${separator}${params.toString()}`;
+};
+
 // Get random image from Unsplash
 export const getRandomImage = async (category = 'nature') => {
   if (!ACCESS_KEY || ACCESS_KEY === 'your_unsplash_api_key_here') {
     console.warn('Unsplash API key not configured. Using placeholder.');
+    const width = window.innerWidth * (window.devicePixelRatio || 1);
+    const height = window.innerHeight * (window.devicePixelRatio || 1);
     return {
-      url: `https://source.unsplash.com/random/1920x1080/?${category}`,
+      url: `https://source.unsplash.com/random/${Math.round(width)}x${Math.round(height)}/?${category}`,
       thumbUrl: `https://source.unsplash.com/random/400x300/?${category}`,
       author: 'Unsplash',
       authorLink: 'https://unsplash.com',
@@ -39,23 +78,39 @@ export const getRandomImage = async (category = 'nature') => {
 
     const data = await response.json();
 
+    // Get the raw URL for maximum quality with custom parameters
+    const rawUrl = data.urls.raw;
+
     return {
       id: data.id,
-      url: data.urls.full,
+      // Raw URL - use buildImageUrl() to get optimized version
+      rawUrl: rawUrl,
+      // Pre-built high quality URL for the current screen
+      url: buildImageUrl(rawUrl, { quality: 100 }),
+      // Full resolution (original)
+      fullUrl: data.urls.full,
+      // Regular for fallback (~1080px)
       regularUrl: data.urls.regular,
+      // Thumbnail for previews
       thumbUrl: data.urls.thumb,
+      // Metadata
       author: data.user.name,
       authorLink: data.user.links.html,
       downloadLocation: data.links.download_location,
       color: data.color,
       description: data.description || data.alt_description,
+      // Original dimensions
+      width: data.width,
+      height: data.height,
       isPlaceholder: false
     };
   } catch (error) {
     console.error('Failed to fetch image from Unsplash:', error);
-    // Fallback to source.unsplash.com
+    // Fallback to source.unsplash.com with high resolution
+    const width = window.innerWidth * (window.devicePixelRatio || 1);
+    const height = window.innerHeight * (window.devicePixelRatio || 1);
     return {
-      url: `https://source.unsplash.com/random/1920x1080/?${category}`,
+      url: `https://source.unsplash.com/random/${Math.round(width)}x${Math.round(height)}/?${category}`,
       thumbUrl: `https://source.unsplash.com/random/400x300/?${category}`,
       author: 'Unsplash',
       authorLink: 'https://unsplash.com',
@@ -96,14 +151,18 @@ export const searchImages = async (query, page = 1, perPage = 10) => {
     return {
       results: data.results.map((photo) => ({
         id: photo.id,
-        url: photo.urls.full,
+        rawUrl: photo.urls.raw,
+        url: buildImageUrl(photo.urls.raw, { quality: 100 }),
+        fullUrl: photo.urls.full,
         regularUrl: photo.urls.regular,
         thumbUrl: photo.urls.thumb,
         author: photo.user.name,
         authorLink: photo.user.links.html,
         downloadLocation: photo.links.download_location,
         color: photo.color,
-        description: photo.description || photo.alt_description
+        description: photo.description || photo.alt_description,
+        width: photo.width,
+        height: photo.height
       })),
       total: data.total,
       totalPages: data.total_pages

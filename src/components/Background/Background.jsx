@@ -101,10 +101,10 @@ const Background = () => {
           />
         )}
 
-        {/* Background image */}
+        {/* Background image - using high quality optimized URL */}
         {imageData?.url && (
           <img
-            src={imageData.regularUrl || imageData.url}
+            src={imageData.url}
             alt={imageData.description || 'Background'}
             className={`${styles.image} ${imageLoaded ? styles.loaded : ''}`}
             onLoad={handleImageLoad}
