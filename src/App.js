@@ -13,7 +13,9 @@ const AppContent = () => {
     widgetStyle,
     uiSettings,
     backgroundMode,
+    backgroundFavorites,
     addBackgroundFavorite,
+    removeBackgroundFavorite,
     isBackgroundFavorited
   } = useContext(AppContext);
 
@@ -69,7 +71,16 @@ const AppContent = () => {
   const isFavorited = currentImageData && isBackgroundFavorited(currentImageData.id);
 
   const handleFavorite = () => {
-    if (currentImageData && !isFavorited) {
+    if (!currentImageData) return;
+
+    if (isFavorited) {
+      // Find and remove the favorite
+      const favorite = backgroundFavorites?.find(f => f.originalId === currentImageData.id);
+      if (favorite) {
+        removeBackgroundFavorite(favorite.id);
+      }
+    } else {
+      // Add to favorites
       addBackgroundFavorite({
         ...currentImageData,
         originalId: currentImageData.id
@@ -100,8 +111,7 @@ const AppContent = () => {
             <button
               className={`control-btn ${isFavorited ? 'favorited' : ''}`}
               onClick={handleFavorite}
-              disabled={isFavorited}
-              title={isFavorited ? '이미 저장됨' : '즐겨찾기에 추가'}
+              title={isFavorited ? '즐겨찾기에서 제거' : '즐겨찾기에 추가'}
             >
               {isFavorited ? <IoHeart /> : <IoHeartOutline />}
             </button>
