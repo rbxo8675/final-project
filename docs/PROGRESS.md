@@ -13,8 +13,8 @@
 | Phase | 제목 | 상태 | 진행률 | 시작일 | 완료일 |
 |-------|------|------|--------|--------|--------|
 | 01 | 프로젝트 초기 설정 | ✅ | 100% | 2025-12-02 | 2025-12-02 |
-| 02 | Context 및 localStorage | ⬜ | 0% | - | - |
-| 03 | 배경 이미지 | ⬜ | 0% | - | - |
+| 02 | Context 및 localStorage | ✅ | 100% | 2025-12-02 | 2025-12-02 |
+| 03 | 배경 이미지 | ✅ | 100% | 2025-12-02 | 2025-12-02 |
 | 04 | 시계/날짜 | ⬜ | 0% | - | - |
 | 05 | 날씨 | ⬜ | 0% | - | - |
 | 06 | 성경 구절 | ⬜ | 0% | - | - |
@@ -37,17 +37,17 @@
 - [x] .env 파일 설정
 
 ### Phase 02: Context 및 localStorage
-- [ ] AppContext 생성
-- [ ] Context Provider 구현
-- [ ] localStorage 유틸리티 생성 (storage.js)
-- [ ] Context와 localStorage 연동
-- [ ] useSettings 커스텀 훅 생성
+- [x] AppContext 생성
+- [x] Context Provider 구현
+- [x] localStorage 유틸리티 생성 (storage.js)
+- [x] Context와 localStorage 연동
+- [x] useSettings 커스텀 훅 생성
 
 ### Phase 03: 배경 이미지
-- [ ] Unsplash API 서비스 구현
-- [ ] Background 컴포넌트 생성
-- [ ] 카테고리 선택 기능
-- [ ] 이미지 로딩 상태 처리
+- [x] Unsplash API 서비스 구현
+- [x] Background 컴포넌트 생성
+- [x] 카테고리 선택 기능
+- [x] 이미지 로딩 상태 처리
 
 ### Phase 04: 시계/날짜
 - [ ] Clock 컴포넌트 생성
@@ -110,6 +110,8 @@
 | 날짜 | 내용 |
 |------|------|
 | 2025-12-02 | Phase 01 완료 - 프로젝트 초기 설정 (폴더 구조, react-icons, CSS 변수, .env) |
+| 2025-12-02 | Phase 02 완료 - Context 및 localStorage (AppContext, storage.js, useSettings) |
+| 2025-12-02 | Phase 03 완료 - 배경 이미지 (Unsplash API, Background 컴포넌트, useApi 훅) |
 
 ---
 
