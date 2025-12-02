@@ -148,21 +148,21 @@ const getPexelsImage = async (category) => {
 
 // Get random image with fallback
 export const getRandomImage = async (category = 'nature') => {
-  // Try Pixabay first
+  // Try Pexels first (higher quality original resolution)
   try {
-    const image = await getPixabayImage(category);
-    console.log('Image loaded from Pixabay');
+    const image = await getPexelsImage(category);
+    console.log('Image loaded from Pexels');
     return image;
-  } catch (pixabayError) {
-    console.warn('Pixabay failed, trying Pexels:', pixabayError.message);
+  } catch (pexelsError) {
+    console.warn('Pexels failed, trying Pixabay:', pexelsError.message);
 
-    // Fallback to Pexels
+    // Fallback to Pixabay
     try {
-      const image = await getPexelsImage(category);
-      console.log('Image loaded from Pexels');
+      const image = await getPixabayImage(category);
+      console.log('Image loaded from Pixabay');
       return image;
-    } catch (pexelsError) {
-      console.error('Both APIs failed:', pexelsError.message);
+    } catch (pixabayError) {
+      console.error('Both APIs failed:', pixabayError.message);
       throw new Error('Failed to load image from any source');
     }
   }
