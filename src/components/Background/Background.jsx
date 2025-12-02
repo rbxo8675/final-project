@@ -9,10 +9,10 @@ import {
 import { useSettings } from '../../hooks/useSettings';
 import {
   getRandomImage,
-  triggerDownload,
   BACKGROUND_CATEGORIES,
   buildImageUrl
-} from '../../services/unsplash';
+} from '../../services/imageApi';
+import { getImage } from '../../utils/indexedDB';
 import FavoritesGallery from './FavoritesGallery';
 import styles from './Background.module.css';
 
@@ -48,11 +48,6 @@ const Background = () => {
     try {
       const data = await getRandomImage(cat);
       setImageData(data);
-
-      // Trigger download for Unsplash API guidelines
-      if (data.downloadLocation) {
-        triggerDownload(data.downloadLocation);
-      }
     } catch (err) {
       setError(err.message || 'Failed to load image');
     } finally {
@@ -64,23 +59,40 @@ const Background = () => {
   useEffect(() => {
     if (!enabled) return;
 
-    if (backgroundMode === 'favorite' && currentBackground) {
-      // Use favorite image
-      setImageData({
-        ...currentBackground,
-        url:
-          currentBackground.type === 'upload'
-            ? currentBackground.url
-            : currentBackground.rawUrl
+    const loadFavoriteImage = async () => {
+      if (backgroundMode === 'favorite' && currentBackground) {
+        setLoading(true);
+
+        // For uploaded images, load from IndexedDB
+        if (currentBackground.type === 'upload') {
+          try {
+            const imageData = await getImage(currentBackground.id);
+            setImageData({
+              ...currentBackground,
+              url: imageData || currentBackground.url
+            });
+          } catch (err) {
+            console.error('Failed to load image from IndexedDB:', err);
+            setImageData(currentBackground);
+          }
+        } else {
+          // For API images, use the stored URL
+          setImageData({
+            ...currentBackground,
+            url: currentBackground.rawUrl
               ? buildImageUrl(currentBackground.rawUrl, { quality: 100 })
               : currentBackground.url
-      });
-      setLoading(false);
-      setImageLoaded(false);
-    } else {
-      // Random mode - load new image
-      loadRandomImage(category);
-    }
+          });
+        }
+        setLoading(false);
+        setImageLoaded(false);
+      } else {
+        // Random mode - load new image
+        loadRandomImage(category);
+      }
+    };
+
+    loadFavoriteImage();
   }, [enabled, backgroundMode, currentBackground, category]);
 
   // Close category menu when clicking outside
@@ -128,7 +140,7 @@ const Background = () => {
 
     if (!isFavorited) {
       const newFavorite = {
-        type: 'unsplash',
+        type: imageData.source || 'api', // pixabay or pexels
         originalId: imageData.id,
         url: imageData.url,
         rawUrl: imageData.rawUrl,
@@ -136,7 +148,9 @@ const Background = () => {
         author: imageData.author,
         authorLink: imageData.authorLink,
         description: imageData.description,
-        color: imageData.color
+        color: imageData.color,
+        source: imageData.source,
+        sourceLink: imageData.sourceLink
       };
       addBackgroundFavorite(newFavorite);
     }
@@ -195,7 +209,7 @@ const Background = () => {
             <div className={styles.attribution}>
               Photo by{' '}
               <a
-                href={`${imageData.authorLink}?utm_source=startpage&utm_medium=referral`}
+                href={imageData.authorLink}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -203,11 +217,15 @@ const Background = () => {
               </a>{' '}
               on{' '}
               <a
-                href="https://unsplash.com?utm_source=startpage&utm_medium=referral"
+                href={
+                  imageData.source === 'pexels'
+                    ? 'https://www.pexels.com'
+                    : 'https://pixabay.com'
+                }
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Unsplash
+                {imageData.source === 'pexels' ? 'Pexels' : 'Pixabay'}
               </a>
             </div>
           )}

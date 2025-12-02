@@ -1,7 +1,7 @@
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { IoClose, IoTrash, IoShuffle, IoCloudUpload } from 'react-icons/io5';
 import { useSettings } from '../../hooks/useSettings';
-import { buildImageUrl } from '../../services/unsplash';
+import { saveImage, getImage, deleteImage, getAllImages } from '../../utils/indexedDB';
 import styles from './FavoritesGallery.module.css';
 
 const FavoritesGallery = ({ isOpen, onClose }) => {
@@ -15,14 +15,60 @@ const FavoritesGallery = ({ isOpen, onClose }) => {
   } = useSettings();
 
   const fileInputRef = useRef(null);
+  const [uploadedImages, setUploadedImages] = useState({});
 
-  const handleSelect = (favorite) => {
-    setCurrentBackground(favorite);
+  // Load uploaded images from IndexedDB
+  useEffect(() => {
+    const loadUploadedImages = async () => {
+      try {
+        const images = await getAllImages();
+        setUploadedImages(images);
+      } catch (err) {
+        console.error('Failed to load uploaded images:', err);
+      }
+    };
+
+    if (isOpen) {
+      loadUploadedImages();
+    }
+  }, [isOpen]);
+
+  const handleSelect = async (favorite) => {
+    // For uploaded images, load full image from IndexedDB
+    if (favorite.type === 'upload') {
+      try {
+        const imageData = await getImage(favorite.id);
+        setCurrentBackground({
+          ...favorite,
+          url: imageData || favorite.url
+        });
+      } catch (err) {
+        console.error('Failed to load image:', err);
+        setCurrentBackground(favorite);
+      }
+    } else {
+      setCurrentBackground(favorite);
+    }
     onClose();
   };
 
-  const handleRemove = (e, id) => {
+  const handleRemove = async (e, id, type) => {
     e.stopPropagation();
+
+    // Delete from IndexedDB if it's an uploaded image
+    if (type === 'upload') {
+      try {
+        await deleteImage(id);
+        setUploadedImages(prev => {
+          const updated = { ...prev };
+          delete updated[id];
+          return updated;
+        });
+      } catch (err) {
+        console.error('Failed to delete image from IndexedDB:', err);
+      }
+    }
+
     removeBackgroundFavorite(id);
   };
 
@@ -35,7 +81,7 @@ const FavoritesGallery = ({ isOpen, onClose }) => {
     fileInputRef.current?.click();
   };
 
-  const handleImageUpload = (event) => {
+  const handleImageUpload = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -50,22 +96,52 @@ const FavoritesGallery = ({ isOpen, onClose }) => {
     }
 
     const reader = new FileReader();
-    reader.onload = (e) => {
-      const newFavorite = {
-        type: 'upload',
-        url: e.target.result,
-        thumbnail: e.target.result,
-        author: '',
-        authorLink: '',
-        name: file.name,
-        originalId: `upload-${Date.now()}`
-      };
-      addBackgroundFavorite(newFavorite);
+    reader.onload = async (e) => {
+      const imageData = e.target.result;
+      const imageId = `upload-${Date.now()}`;
+
+      try {
+        // Save image to IndexedDB
+        await saveImage(imageId, imageData);
+
+        // Update local state
+        setUploadedImages(prev => ({
+          ...prev,
+          [imageId]: imageData
+        }));
+
+        // Add to favorites (without the image data - only metadata)
+        const newFavorite = {
+          type: 'upload',
+          url: '', // Will be loaded from IndexedDB
+          thumbnail: '', // Will use IndexedDB data
+          author: '',
+          authorLink: '',
+          name: file.name,
+          originalId: imageId
+        };
+        addBackgroundFavorite(newFavorite);
+      } catch (err) {
+        console.error('Failed to save image:', err);
+        alert(
+          language === 'ko'
+            ? '이미지 저장에 실패했습니다.'
+            : 'Failed to save image.'
+        );
+      }
     };
     reader.readAsDataURL(file);
 
     // Reset input
     event.target.value = '';
+  };
+
+  // Get thumbnail for display
+  const getThumbnail = (fav) => {
+    if (fav.type === 'upload') {
+      return uploadedImages[fav.id] || fav.thumbnail || '';
+    }
+    return fav.thumbnail || fav.url;
   };
 
   if (!isOpen) return null;
@@ -115,28 +191,18 @@ const FavoritesGallery = ({ isOpen, onClose }) => {
                   onClick={() => handleSelect(fav)}
                 >
                   <img
-                    src={
-                      fav.type === 'upload'
-                        ? fav.thumbnail
-                        : fav.rawUrl
-                          ? buildImageUrl(fav.rawUrl, {
-                              width: 200,
-                              height: 120,
-                              quality: 80
-                            })
-                          : fav.thumbnail
-                    }
+                    src={getThumbnail(fav)}
                     alt={fav.name || fav.description || 'Background'}
                     loading="lazy"
                   />
                   <button
                     className={styles.removeButton}
-                    onClick={(e) => handleRemove(e, fav.id)}
+                    onClick={(e) => handleRemove(e, fav.id, fav.type)}
                     aria-label="Remove"
                   >
                     <IoTrash />
                   </button>
-                  {fav.type === 'unsplash' && fav.author && (
+                  {(fav.type === 'pixabay' || fav.type === 'pexels' || fav.source) && fav.author && (
                     <span className={styles.author}>{fav.author}</span>
                   )}
                   {fav.type === 'upload' && (
