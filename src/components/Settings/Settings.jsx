@@ -27,6 +27,13 @@ const WIDGET_STYLES = [
   { id: 'frosted', label: { ko: '프로스트', en: 'Frosted' }, preview: 'rgba(255,255,255,0.25)' }
 ];
 
+// Common emoji icons for page favicon
+const PAGE_ICONS = [
+  '🏠', '⭐', '🌟', '💫', '✨', '🔥', '💡', '🎯',
+  '📌', '🚀', '💻', '📱', '🎨', '🎵', '📚', '☕',
+  '🌈', '🌙', '☀️', '🌸', '🍀', '💎', '🔔', '❤️'
+];
+
 const Settings = ({ isOpen, onClose }) => {
   const {
     theme,
@@ -47,12 +54,22 @@ const Settings = ({ isOpen, onClose }) => {
     setCurrentBackground,
     setBackgroundMode,
     backgroundPosition,
-    setBackgroundPosition
+    setBackgroundPosition,
+    pageTitle,
+    pageIcon,
+    updatePageTitle,
+    updatePageIcon
   } = useSettings();
 
   const [activeTab, setActiveTab] = useState('appearance');
   const [favoriteThumbnails, setFavoriteThumbnails] = useState({});
+  const [tempPageTitle, setTempPageTitle] = useState(pageTitle || 'My Start Page');
   const fileInputRef = useRef(null);
+
+  // Sync tempPageTitle when pageTitle changes externally
+  useEffect(() => {
+    setTempPageTitle(pageTitle || 'My Start Page');
+  }, [pageTitle]);
 
   // Load thumbnails for uploaded images
   useEffect(() => {
@@ -193,6 +210,52 @@ const Settings = ({ isOpen, onClose }) => {
           {/* Appearance Tab */}
           {activeTab === 'appearance' && (
             <div className={styles.section}>
+              {/* Page Title */}
+              <div className={styles.settingGroup}>
+                <label className={styles.label}>
+                  {language === 'ko' ? '페이지 제목' : 'Page Title'}
+                </label>
+                <div className={styles.inputWithButton}>
+                  <input
+                    type="text"
+                    className={styles.textInput}
+                    value={tempPageTitle}
+                    onChange={(e) => setTempPageTitle(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        updatePageTitle(tempPageTitle);
+                      }
+                    }}
+                    placeholder={language === 'ko' ? '페이지 제목 입력' : 'Enter page title'}
+                  />
+                  <button
+                    className={styles.confirmBtn}
+                    onClick={() => updatePageTitle(tempPageTitle)}
+                    disabled={tempPageTitle === pageTitle}
+                  >
+                    <IoCheckmarkCircle />
+                  </button>
+                </div>
+              </div>
+
+              {/* Page Icon */}
+              <div className={styles.settingGroup}>
+                <label className={styles.label}>
+                  {language === 'ko' ? '페이지 아이콘' : 'Page Icon'}
+                </label>
+                <div className={styles.iconSelector}>
+                  {PAGE_ICONS.map((icon) => (
+                    <button
+                      key={icon}
+                      className={`${styles.iconBtn} ${pageIcon === icon ? styles.active : ''}`}
+                      onClick={() => updatePageIcon(icon)}
+                    >
+                      {icon}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Theme */}
               <div className={styles.settingGroup}>
                 <label className={styles.label}>

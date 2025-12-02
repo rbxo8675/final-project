@@ -34,7 +34,10 @@ const ACTIONS = {
   REMOVE_BACKGROUND_FAVORITE: 'REMOVE_BACKGROUND_FAVORITE',
   SET_CURRENT_BACKGROUND: 'SET_CURRENT_BACKGROUND',
   SET_BACKGROUND_MODE: 'SET_BACKGROUND_MODE',
-  SET_BACKGROUND_POSITION: 'SET_BACKGROUND_POSITION'
+  SET_BACKGROUND_POSITION: 'SET_BACKGROUND_POSITION',
+  // Page metadata
+  UPDATE_PAGE_TITLE: 'UPDATE_PAGE_TITLE',
+  UPDATE_PAGE_ICON: 'UPDATE_PAGE_ICON'
 };
 
 // Reducer
@@ -245,6 +248,18 @@ const appReducer = (state, action) => {
         backgroundPosition: action.payload
       };
 
+    case ACTIONS.UPDATE_PAGE_TITLE:
+      return {
+        ...state,
+        pageTitle: action.payload
+      };
+
+    case ACTIONS.UPDATE_PAGE_ICON:
+      return {
+        ...state,
+        pageIcon: action.payload
+      };
+
     default:
       return state;
   }
@@ -272,6 +287,30 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', state.theme);
   }, [state.theme]);
+
+  // Update document title
+  useEffect(() => {
+    document.title = state.pageTitle || 'My Start Page';
+  }, [state.pageTitle]);
+
+  // Update favicon with emoji
+  useEffect(() => {
+    const emoji = state.pageIcon || '🏠';
+    const canvas = document.createElement('canvas');
+    canvas.width = 64;
+    canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+    ctx.font = '56px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(emoji, 32, 36);
+
+    const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+    link.type = 'image/x-icon';
+    link.rel = 'shortcut icon';
+    link.href = canvas.toDataURL();
+    document.head.appendChild(link);
+  }, [state.pageIcon]);
 
   // Action creators
   const updateTheme = useCallback((theme) => {
@@ -419,6 +458,15 @@ export const AppProvider = ({ children }) => {
     dispatch({ type: ACTIONS.SET_BACKGROUND_POSITION, payload: position });
   }, []);
 
+  // Page metadata actions
+  const updatePageTitle = useCallback((title) => {
+    dispatch({ type: ACTIONS.UPDATE_PAGE_TITLE, payload: title });
+  }, []);
+
+  const updatePageIcon = useCallback((icon) => {
+    dispatch({ type: ACTIONS.UPDATE_PAGE_ICON, payload: icon });
+  }, []);
+
   // Check if an image is in favorites
   const isBackgroundFavorited = useCallback(
     (imageId) => {
@@ -457,7 +505,10 @@ export const AppProvider = ({ children }) => {
     setCurrentBackground,
     setBackgroundMode,
     setBackgroundPosition,
-    isBackgroundFavorited
+    isBackgroundFavorited,
+    // Page metadata
+    updatePageTitle,
+    updatePageIcon
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

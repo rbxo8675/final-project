@@ -2,6 +2,10 @@ const STORAGE_KEY = 'startpage-settings';
 
 // Default settings
 export const defaultSettings = {
+  // Page metadata
+  pageTitle: 'My Start Page',
+  pageIcon: '🏠', // Emoji icon for favicon
+
   // Theme settings
   theme: 'light',
   language: 'ko',

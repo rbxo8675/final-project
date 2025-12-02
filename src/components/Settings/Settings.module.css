@@ -165,6 +165,96 @@
   font-size: 16px;
 }
 
+/* Input with Button */
+.inputWithButton {
+  display: flex;
+  gap: 8px;
+}
+
+.inputWithButton .textInput {
+  flex: 1;
+}
+
+/* Text Input */
+.textInput {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: white;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.textInput:focus {
+  border-color: #3b82f6;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.textInput::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Confirm Button */
+.confirmBtn {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #10b981;
+  border: none;
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.confirmBtn:hover:not(:disabled) {
+  background: #059669;
+}
+
+.confirmBtn:disabled {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.3);
+  cursor: not-allowed;
+}
+
+/* Icon Selector */
+.iconSelector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.iconBtn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid transparent;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.iconBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.iconBtn.active {
+  background: rgba(59, 130, 246, 0.3);
+  border-color: #3b82f6;
+}
+
 /* Theme Selector */
 .themeSelector {
   display: flex;
