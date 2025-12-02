@@ -1,3 +1,4 @@
+/* Background Layer - sits behind everything */
 .background {
   position: fixed;
   top: 0;
@@ -6,6 +7,25 @@
   height: 100%;
   z-index: var(--z-background);
   overflow: hidden;
+}
+
+/* Dark overlay for better text readability */
+.background::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.1) 0%,
+    rgba(0, 0, 0, 0) 30%,
+    rgba(0, 0, 0, 0) 70%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
 }
 
 .colorPlaceholder {
@@ -44,7 +64,7 @@
   align-items: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.3);
-  z-index: 2;
+  z-index: 3;
 }
 
 .spinner {
@@ -70,7 +90,7 @@
   transform: translate(-50%, -50%);
   text-align: center;
   color: white;
-  z-index: 3;
+  z-index: 4;
 }
 
 .errorMessage p {
@@ -85,10 +105,30 @@
   border-radius: var(--radius-md);
   font-size: var(--font-size-base);
   transition: background-color var(--transition-fast);
+  cursor: pointer;
 }
 
 .errorMessage button:hover {
   background-color: var(--color-primary-hover);
+}
+
+/* ========================================
+   Controls Layer - SEPARATE stacking context
+   This layer sits ABOVE main-content
+   ======================================== */
+.controlsLayer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: var(--z-widget);
+  pointer-events: none; /* Allow clicks to pass through to content below */
+}
+
+/* Enable pointer events only on interactive elements */
+.controlsLayer > * {
+  pointer-events: auto;
 }
 
 /* Attribution */
@@ -101,7 +141,6 @@
   color: rgba(255, 255, 255, 0.8);
   font-size: var(--font-size-xs);
   border-radius: var(--radius-sm);
-  z-index: 3;
   backdrop-filter: blur(4px);
 }
 
@@ -123,7 +162,6 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
-  z-index: 3;
 }
 
 /* Category Selector */
@@ -230,23 +268,4 @@
 
 .spinning {
   animation: spin 1s linear infinite;
-}
-
-/* Dark overlay for better text readability */
-.background::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.1) 0%,
-    rgba(0, 0, 0, 0) 30%,
-    rgba(0, 0, 0, 0) 70%,
-    rgba(0, 0, 0, 0.2) 100%
-  );
-  pointer-events: none;
-  z-index: 2;
 }

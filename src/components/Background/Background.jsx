@@ -90,103 +90,109 @@ const Background = () => {
   }
 
   return (
-    <div className={styles.background}>
-      {/* Background color placeholder */}
-      {imageData?.color && (
-        <div
-          className={styles.colorPlaceholder}
-          style={{ backgroundColor: imageData.color }}
-        />
-      )}
+    <>
+      {/* Background Layer - z-index: -1 */}
+      <div className={styles.background}>
+        {/* Background color placeholder */}
+        {imageData?.color && (
+          <div
+            className={styles.colorPlaceholder}
+            style={{ backgroundColor: imageData.color }}
+          />
+        )}
 
-      {/* Background image */}
-      {imageData?.url && (
-        <img
-          src={imageData.regularUrl || imageData.url}
-          alt={imageData.description || 'Background'}
-          className={`${styles.image} ${imageLoaded ? styles.loaded : ''}`}
-          onLoad={handleImageLoad}
-        />
-      )}
+        {/* Background image */}
+        {imageData?.url && (
+          <img
+            src={imageData.regularUrl || imageData.url}
+            alt={imageData.description || 'Background'}
+            className={`${styles.image} ${imageLoaded ? styles.loaded : ''}`}
+            onLoad={handleImageLoad}
+          />
+        )}
 
-      {/* Loading overlay */}
-      {loading && (
-        <div className={styles.loadingOverlay}>
-          <div className={styles.spinner} />
-        </div>
-      )}
+        {/* Loading overlay */}
+        {loading && (
+          <div className={styles.loadingOverlay}>
+            <div className={styles.spinner} />
+          </div>
+        )}
 
-      {/* Error message */}
-      {error && !imageData && (
-        <div className={styles.errorMessage}>
-          <p>Failed to load background image</p>
-          <button onClick={handleRefresh}>Try Again</button>
-        </div>
-      )}
-
-      {/* Attribution */}
-      {imageData && !imageData.isPlaceholder && (
-        <div className={styles.attribution}>
-          Photo by{' '}
-          <a
-            href={`${imageData.authorLink}?utm_source=startpage&utm_medium=referral`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {imageData.author}
-          </a>{' '}
-          on{' '}
-          <a
-            href="https://unsplash.com?utm_source=startpage&utm_medium=referral"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Unsplash
-          </a>
-        </div>
-      )}
-
-      {/* Controls */}
-      <div className={styles.controls}>
-        {/* Category selector */}
-        <div className={styles.categorySelector} ref={categoryMenuRef}>
-          <button
-            className={styles.categoryButton}
-            onClick={toggleCategoryMenu}
-            aria-label="Select category"
-          >
-            <span>{getCurrentCategoryLabel()}</span>
-            <IoChevronDown
-              className={`${styles.chevron} ${showCategoryMenu ? styles.open : ''}`}
-            />
-          </button>
-
-          {showCategoryMenu && (
-            <div className={styles.categoryMenu}>
-              {BACKGROUND_CATEGORIES.map((cat) => (
-                <button
-                  key={cat.id}
-                  className={`${styles.categoryItem} ${category === cat.id ? styles.active : ''}`}
-                  onClick={() => handleCategoryChange(cat.id)}
-                >
-                  {cat.label[language] || cat.label.ko}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Refresh button */}
-        <button
-          className={styles.refreshButton}
-          onClick={handleRefresh}
-          disabled={loading}
-          aria-label="Refresh background image"
-        >
-          <IoRefresh className={loading ? styles.spinning : ''} />
-        </button>
+        {/* Error message */}
+        {error && !imageData && (
+          <div className={styles.errorMessage}>
+            <p>Failed to load background image</p>
+            <button onClick={handleRefresh}>Try Again</button>
+          </div>
+        )}
       </div>
-    </div>
+
+      {/* Controls Layer - z-index: 10 (separate from background) */}
+      <div className={styles.controlsLayer}>
+        {/* Attribution */}
+        {imageData && !imageData.isPlaceholder && (
+          <div className={styles.attribution}>
+            Photo by{' '}
+            <a
+              href={`${imageData.authorLink}?utm_source=startpage&utm_medium=referral`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {imageData.author}
+            </a>{' '}
+            on{' '}
+            <a
+              href="https://unsplash.com?utm_source=startpage&utm_medium=referral"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Unsplash
+            </a>
+          </div>
+        )}
+
+        {/* Controls */}
+        <div className={styles.controls}>
+          {/* Category selector */}
+          <div className={styles.categorySelector} ref={categoryMenuRef}>
+            <button
+              className={styles.categoryButton}
+              onClick={toggleCategoryMenu}
+              aria-label="Select category"
+            >
+              <span>{getCurrentCategoryLabel()}</span>
+              <IoChevronDown
+                className={`${styles.chevron} ${showCategoryMenu ? styles.open : ''}`}
+              />
+            </button>
+
+            {showCategoryMenu && (
+              <div className={styles.categoryMenu}>
+                {BACKGROUND_CATEGORIES.map((cat) => (
+                  <button
+                    key={cat.id}
+                    className={`${styles.categoryItem} ${category === cat.id ? styles.active : ''}`}
+                    onClick={() => handleCategoryChange(cat.id)}
+                  >
+                    {cat.label[language] || cat.label.ko}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Refresh button */}
+          <button
+            className={styles.refreshButton}
+            onClick={handleRefresh}
+            disabled={loading}
+            aria-label="Refresh background image"
+          >
+            <IoRefresh className={loading ? styles.spinning : ''} />
+          </button>
+        </div>
+      </div>
+    </>
   );
 };
 
