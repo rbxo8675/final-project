@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 import { IoClose, IoTrash, IoShuffle, IoCloudUpload } from 'react-icons/io5';
 import { useSettings } from '../../hooks/useSettings';
-import { MAX_IMAGE_SIZE } from '../../utils/storage';
 import { buildImageUrl } from '../../services/unsplash';
 import styles from './FavoritesGallery.module.css';
 
@@ -39,16 +38,6 @@ const FavoritesGallery = ({ isOpen, onClose }) => {
   const handleImageUpload = (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
-    // File size validation (5MB limit)
-    if (file.size > MAX_IMAGE_SIZE) {
-      alert(
-        language === 'ko'
-          ? '이미지 크기는 5MB 이하여야 합니다.'
-          : 'Image size must be less than 5MB.'
-      );
-      return;
-    }
 
     // File type validation
     if (!file.type.startsWith('image/')) {
