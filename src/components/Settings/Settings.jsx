@@ -160,30 +160,34 @@ const Settings = ({ isOpen, onClose }) => {
   return (
     <div className={styles.overlay} onClick={handleOverlayClick}>
       <div className={styles.modal}>
-        {/* Header */}
-        <div className={styles.header}>
-          <h2>{language === 'ko' ? '설정' : 'Settings'}</h2>
-          <button className={styles.closeBtn} onClick={onClose}>
-            <IoClose />
-          </button>
+        {/* Sidebar */}
+        <div className={styles.sidebar}>
+          <div className={styles.sidebarHeader}>
+            <h2>{language === 'ko' ? '설정' : 'Settings'}</h2>
+          </div>
+          <nav className={styles.tabs}>
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                className={`${styles.tab} ${activeTab === tab.id ? styles.active : ''}`}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                {tab.icon}
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </nav>
         </div>
 
-        {/* Tabs */}
-        <div className={styles.tabs}>
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              className={`${styles.tab} ${activeTab === tab.id ? styles.active : ''}`}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              {tab.icon}
-              <span>{tab.label}</span>
+        {/* Main Content */}
+        <div className={styles.main}>
+          <div className={styles.header}>
+            <h3>{tabs.find(t => t.id === activeTab)?.label}</h3>
+            <button className={styles.closeBtn} onClick={onClose}>
+              <IoClose />
             </button>
-          ))}
-        </div>
-
-        {/* Content */}
-        <div className={styles.content}>
+          </div>
+          <div className={styles.content}>
           {/* Appearance Tab */}
           {activeTab === 'appearance' && (
             <div className={styles.section}>
@@ -465,6 +469,7 @@ const Settings = ({ isOpen, onClose }) => {
               )}
             </div>
           )}
+          </div>
         </div>
       </div>
     </div>
