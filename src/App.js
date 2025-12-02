@@ -1,6 +1,8 @@
 import { AppProvider } from './contexts/AppContext';
 import Background from './components/Background';
 import Clock from './components/Clock/Clock';
+import Weather from './components/Weather';
+import Quote from './components/Quote';
 import './App.css';
 
 function App() {
@@ -15,8 +17,12 @@ function App() {
           {/* Clock */}
           <Clock />
 
-          {/* Weather will be placed here */}
-          {/* Quote will be placed here */}
+          {/* Weather */}
+          <Weather />
+
+          {/* Quote */}
+          <Quote />
+
           {/* Bookmarks will be placed here */}
           {/* TodoList will be placed here */}
         </main>
