@@ -69,6 +69,87 @@
   --color-shadow: rgba(0, 0, 0, 0.3);
 }
 
+/* ========================================
+   Widget Styles
+   ======================================== */
+
+/* Glass Style (Default) */
+[data-widget-style='glass'] {
+  --widget-bg: rgba(255, 255, 255, 0.15);
+  --widget-border: rgba(255, 255, 255, 0.2);
+  --widget-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  --widget-backdrop: blur(12px);
+  --widget-text: rgba(255, 255, 255, 0.95);
+  --widget-text-secondary: rgba(255, 255, 255, 0.7);
+}
+
+[data-theme='dark'][data-widget-style='glass'] {
+  --widget-bg: rgba(31, 41, 55, 0.6);
+  --widget-border: rgba(255, 255, 255, 0.1);
+}
+
+/* Solid Style */
+[data-widget-style='solid'] {
+  --widget-bg: rgba(255, 255, 255, 0.95);
+  --widget-border: rgba(0, 0, 0, 0.1);
+  --widget-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  --widget-backdrop: none;
+  --widget-text: #1f2937;
+  --widget-text-secondary: #6b7280;
+}
+
+[data-theme='dark'][data-widget-style='solid'] {
+  --widget-bg: rgba(31, 41, 55, 0.95);
+  --widget-border: rgba(255, 255, 255, 0.1);
+  --widget-text: #f9fafb;
+  --widget-text-secondary: #9ca3af;
+}
+
+/* Minimal Style */
+[data-widget-style='minimal'] {
+  --widget-bg: transparent;
+  --widget-border: transparent;
+  --widget-shadow: none;
+  --widget-backdrop: none;
+  --widget-text: rgba(255, 255, 255, 0.95);
+  --widget-text-secondary: rgba(255, 255, 255, 0.7);
+}
+
+[data-theme='dark'][data-widget-style='minimal'] {
+  --widget-text: rgba(255, 255, 255, 0.95);
+  --widget-text-secondary: rgba(255, 255, 255, 0.6);
+}
+
+/* Neon Style */
+[data-widget-style='neon'] {
+  --widget-bg: rgba(0, 0, 0, 0.6);
+  --widget-border: #00f5ff;
+  --widget-shadow: 0 0 20px rgba(0, 245, 255, 0.3), inset 0 0 20px rgba(0, 245, 255, 0.1);
+  --widget-backdrop: blur(8px);
+  --widget-text: #00f5ff;
+  --widget-text-secondary: rgba(0, 245, 255, 0.7);
+  --widget-glow: 0 0 10px rgba(0, 245, 255, 0.5);
+}
+
+[data-theme='dark'][data-widget-style='neon'] {
+  --widget-bg: rgba(0, 0, 0, 0.7);
+}
+
+/* Frosted Style */
+[data-widget-style='frosted'] {
+  --widget-bg: rgba(255, 255, 255, 0.25);
+  --widget-border: rgba(255, 255, 255, 0.3);
+  --widget-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --widget-backdrop: blur(20px) saturate(180%);
+  --widget-text: rgba(255, 255, 255, 0.95);
+  --widget-text-secondary: rgba(255, 255, 255, 0.75);
+}
+
+[data-theme='dark'][data-widget-style='frosted'] {
+  --widget-bg: rgba(0, 0, 0, 0.35);
+  --widget-border: rgba(255, 255, 255, 0.15);
+}
+
 /* Base Styles */
 html {
   font-size: 16px;

@@ -9,8 +9,13 @@ const ACTIONS = {
   SET_SETTINGS: 'SET_SETTINGS',
   UPDATE_THEME: 'UPDATE_THEME',
   UPDATE_LANGUAGE: 'UPDATE_LANGUAGE',
+  UPDATE_WIDGET_STYLE: 'UPDATE_WIDGET_STYLE',
+  UPDATE_UI_SETTINGS: 'UPDATE_UI_SETTINGS',
   UPDATE_WIDGET_SETTINGS: 'UPDATE_WIDGET_SETTINGS',
   UPDATE_LAYOUT: 'UPDATE_LAYOUT',
+  ADD_WIDGET_INSTANCE: 'ADD_WIDGET_INSTANCE',
+  REMOVE_WIDGET_INSTANCE: 'REMOVE_WIDGET_INSTANCE',
+  UPDATE_WIDGET_INSTANCE: 'UPDATE_WIDGET_INSTANCE',
   ADD_BOOKMARK: 'ADD_BOOKMARK',
   REMOVE_BOOKMARK: 'REMOVE_BOOKMARK',
   UPDATE_BOOKMARK: 'UPDATE_BOOKMARK',
@@ -39,6 +44,15 @@ const appReducer = (state, action) => {
     case ACTIONS.UPDATE_LANGUAGE:
       return { ...state, language: action.payload };
 
+    case ACTIONS.UPDATE_WIDGET_STYLE:
+      return { ...state, widgetStyle: action.payload };
+
+    case ACTIONS.UPDATE_UI_SETTINGS:
+      return {
+        ...state,
+        uiSettings: { ...state.uiSettings, ...action.payload }
+      };
+
     case ACTIONS.UPDATE_WIDGET_SETTINGS:
       return {
         ...state,
@@ -53,6 +67,34 @@ const appReducer = (state, action) => {
 
     case ACTIONS.UPDATE_LAYOUT:
       return { ...state, layout: action.payload };
+
+    case ACTIONS.ADD_WIDGET_INSTANCE: {
+      const { instance, layoutItem } = action.payload;
+      return {
+        ...state,
+        widgetInstances: [...(state.widgetInstances || []), instance],
+        layout: [...(state.layout || []), layoutItem]
+      };
+    }
+
+    case ACTIONS.REMOVE_WIDGET_INSTANCE: {
+      const instanceId = action.payload;
+      return {
+        ...state,
+        widgetInstances: (state.widgetInstances || []).filter(w => w.id !== instanceId),
+        layout: (state.layout || []).filter(l => l.i !== instanceId)
+      };
+    }
+
+    case ACTIONS.UPDATE_WIDGET_INSTANCE: {
+      const { id, settings } = action.payload;
+      return {
+        ...state,
+        widgetInstances: (state.widgetInstances || []).map(w =>
+          w.id === id ? { ...w, settings: { ...w.settings, ...settings } } : w
+        )
+      };
+    }
 
     case ACTIONS.ADD_BOOKMARK:
       return {
@@ -186,6 +228,14 @@ export const AppProvider = ({ children }) => {
     dispatch({ type: ACTIONS.UPDATE_LANGUAGE, payload: language });
   }, []);
 
+  const updateWidgetStyle = useCallback((style) => {
+    dispatch({ type: ACTIONS.UPDATE_WIDGET_STYLE, payload: style });
+  }, []);
+
+  const updateUiSettings = useCallback((settings) => {
+    dispatch({ type: ACTIONS.UPDATE_UI_SETTINGS, payload: settings });
+  }, []);
+
   const updateWidgetSettings = useCallback((widgetName, settings) => {
     dispatch({
       type: ACTIONS.UPDATE_WIDGET_SETTINGS,
@@ -195,6 +245,44 @@ export const AppProvider = ({ children }) => {
 
   const updateLayout = useCallback((layout) => {
     dispatch({ type: ACTIONS.UPDATE_LAYOUT, payload: layout });
+  }, []);
+
+  const addWidgetInstance = useCallback((type, settings = {}) => {
+    const id = `${type}-${Date.now()}`;
+    const instance = { id, type, settings };
+
+    // Default layout positions for new widgets
+    const layoutDefaults = {
+      clock: { w: 4, h: 4, minW: 2, minH: 2 },
+      weather: { w: 3, h: 4, minW: 2, minH: 3 },
+      quote: { w: 6, h: 2, minW: 3, minH: 2 }
+    };
+
+    const defaults = layoutDefaults[type] || { w: 2, h: 2, minW: 2, minH: 2 };
+    const layoutItem = {
+      i: id,
+      x: 0,
+      y: Infinity, // Place at bottom
+      ...defaults
+    };
+
+    dispatch({
+      type: ACTIONS.ADD_WIDGET_INSTANCE,
+      payload: { instance, layoutItem }
+    });
+
+    return id;
+  }, []);
+
+  const removeWidgetInstance = useCallback((id) => {
+    dispatch({ type: ACTIONS.REMOVE_WIDGET_INSTANCE, payload: id });
+  }, []);
+
+  const updateWidgetInstance = useCallback((id, settings) => {
+    dispatch({
+      type: ACTIONS.UPDATE_WIDGET_INSTANCE,
+      payload: { id, settings }
+    });
   }, []);
 
   const addBookmark = useCallback((bookmark) => {
@@ -262,8 +350,13 @@ export const AppProvider = ({ children }) => {
     ...state,
     updateTheme,
     updateLanguage,
+    updateWidgetStyle,
+    updateUiSettings,
     updateWidgetSettings,
     updateLayout,
+    addWidgetInstance,
+    removeWidgetInstance,
+    updateWidgetInstance,
     addBookmark,
     removeBookmark,
     updateBookmark,

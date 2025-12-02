@@ -6,18 +6,34 @@ export const defaultSettings = {
   theme: 'light',
   language: 'ko',
 
-  // Widget settings
-  widgets: {
-    background: { enabled: true, category: 'nature' },
-    clock: { enabled: true, style: 'digital-large' },
-    weather: { enabled: true },
-    quote: { enabled: true, type: 'bible' },
-    bookmarks: { enabled: true },
-    todoList: { enabled: true }
+  // Widget style (glass, solid, minimal, neon, frosted)
+  widgetStyle: 'glass',
+
+  // UI settings
+  uiSettings: {
+    showControlsOnHover: true, // 설정 버튼 호버 시에만 표시
+    controlsTimeout: 3000, // 마우스 멈춤 후 숨김 시간 (ms)
+    editMode: false // 위젯 편집 모드
   },
 
+  // Widget settings (legacy - for background only)
+  widgets: {
+    background: { enabled: true, category: 'nature' }
+  },
+
+  // Widget instances - each widget can have multiple instances
+  widgetInstances: [
+    { id: 'clock-1', type: 'clock', settings: { style: 'digital-large' } },
+    { id: 'weather-1', type: 'weather', settings: {} },
+    { id: 'quote-1', type: 'quote', settings: { type: 'bible' } }
+  ],
+
   // Widget layout
-  layout: [],
+  layout: [
+    { i: 'clock-1', x: 4, y: 2, w: 4, h: 4, minW: 2, minH: 2 },
+    { i: 'weather-1', x: 0, y: 0, w: 3, h: 4, minW: 2, minH: 3 },
+    { i: 'quote-1', x: 3, y: 6, w: 6, h: 2, minW: 3, minH: 2 }
+  ],
 
   // Data
   bookmarks: [],

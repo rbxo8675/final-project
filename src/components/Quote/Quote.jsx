@@ -3,13 +3,14 @@ import { useSettings } from '../../hooks/useSettings';
 import { getContent } from '../../services/quote';
 import styles from './Quote.module.css';
 
-const Quote = () => {
-  const { widgets, language = 'ko', bibleTranslation = 'korean' } = useSettings();
+const Quote = ({ type }) => {
+  const { language = 'ko', bibleTranslation = 'korean' } = useSettings();
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const quoteType = widgets?.quote?.type || 'both'; // 'bible' | 'quote' | 'both'
+  // Use prop type if provided, otherwise default to 'both'
+  const quoteType = type || 'both'; // 'bible' | 'quote' | 'both'
 
   useEffect(() => {
     loadContent();

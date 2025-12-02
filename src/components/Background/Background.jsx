@@ -1,40 +1,20 @@
-import { useState, useEffect, useRef } from 'react';
-import {
-  IoRefresh,
-  IoChevronDown,
-  IoHeart,
-  IoHeartOutline,
-  IoGrid
-} from 'react-icons/io5';
+import { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { useSettings } from '../../hooks/useSettings';
-import {
-  getRandomImage,
-  BACKGROUND_CATEGORIES,
-  buildImageUrl
-} from '../../services/imageApi';
+import { getRandomImage, buildImageUrl } from '../../services/imageApi';
 import { getImage } from '../../utils/indexedDB';
-import FavoritesGallery from './FavoritesGallery';
 import styles from './Background.module.css';
 
-const Background = () => {
+const Background = forwardRef(({ onImageChange }, ref) => {
   const {
     widgets,
-    language,
-    updateWidgetSettings,
-    backgroundFavorites,
     currentBackground,
-    backgroundMode,
-    addBackgroundFavorite,
-    isBackgroundFavorited
+    backgroundMode
   } = useSettings();
 
   const [imageData, setImageData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [error, setError] = useState(null);
-  const [showCategoryMenu, setShowCategoryMenu] = useState(false);
-  const [showGallery, setShowGallery] = useState(false);
-  const categoryMenuRef = useRef(null);
 
   const category = widgets?.background?.category || 'nature';
   const enabled = widgets?.background?.enabled ?? true;
@@ -54,6 +34,18 @@ const Background = () => {
       setLoading(false);
     }
   };
+
+  // Expose refresh function to parent
+  useImperativeHandle(ref, () => ({
+    refresh: () => loadRandomImage(category)
+  }), [category]);
+
+  // Notify parent when image changes
+  useEffect(() => {
+    if (onImageChange && imageData) {
+      onImageChange(imageData);
+    }
+  }, [imageData, onImageChange]);
 
   // Load image based on mode
   useEffect(() => {
@@ -95,233 +87,80 @@ const Background = () => {
     loadFavoriteImage();
   }, [enabled, backgroundMode, currentBackground, category]);
 
-  // Close category menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        categoryMenuRef.current &&
-        !categoryMenuRef.current.contains(event.target)
-      ) {
-        setShowCategoryMenu(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const handleRefresh = () => {
-    loadRandomImage(category);
-  };
-
   const handleImageLoad = () => {
     setImageLoaded(true);
   };
 
-  const handleCategoryChange = (newCategory) => {
-    updateWidgetSettings('background', { category: newCategory });
-    setShowCategoryMenu(false);
+  const handleRetry = () => {
+    loadRandomImage(category);
   };
-
-  const toggleCategoryMenu = () => {
-    setShowCategoryMenu((prev) => !prev);
-  };
-
-  const getCurrentCategoryLabel = () => {
-    const cat = BACKGROUND_CATEGORIES.find((c) => c.id === category);
-    return cat ? cat.label[language] || cat.label.ko : category;
-  };
-
-  // Handle favorite toggle
-  const handleFavoriteToggle = () => {
-    if (!imageData || imageData.isPlaceholder) return;
-
-    const isFavorited = isBackgroundFavorited(imageData.id);
-
-    if (!isFavorited) {
-      const newFavorite = {
-        type: imageData.source || 'api', // pixabay or pexels
-        originalId: imageData.id,
-        url: imageData.url,
-        rawUrl: imageData.rawUrl,
-        thumbnail: imageData.thumbUrl,
-        author: imageData.author,
-        authorLink: imageData.authorLink,
-        description: imageData.description,
-        color: imageData.color,
-        source: imageData.source,
-        sourceLink: imageData.sourceLink
-      };
-      addBackgroundFavorite(newFavorite);
-    }
-  };
-
-  const isFavorited = imageData?.id && isBackgroundFavorited(imageData.id);
 
   if (!enabled) {
     return <div className={styles.background} />;
   }
 
   return (
-    <>
-      {/* Background Layer - z-index: -1 */}
-      <div className={styles.background}>
-        {/* Background color placeholder */}
-        {imageData?.color && (
-          <div
-            className={styles.colorPlaceholder}
-            style={{ backgroundColor: imageData.color }}
-          />
-        )}
+    <div className={styles.background}>
+      {/* Background color placeholder */}
+      {imageData?.color && (
+        <div
+          className={styles.colorPlaceholder}
+          style={{ backgroundColor: imageData.color }}
+        />
+      )}
 
-        {/* Background image - using high quality optimized URL */}
-        {imageData?.url && (
-          <img
-            src={imageData.url}
-            alt={imageData.description || 'Background'}
-            className={`${styles.image} ${imageLoaded ? styles.loaded : ''}`}
-            onLoad={handleImageLoad}
-          />
-        )}
+      {/* Background image */}
+      {imageData?.url && (
+        <img
+          src={imageData.url}
+          alt={imageData.description || 'Background'}
+          className={`${styles.image} ${imageLoaded ? styles.loaded : ''}`}
+          onLoad={handleImageLoad}
+        />
+      )}
 
-        {/* Loading overlay */}
-        {loading && (
-          <div className={styles.loadingOverlay}>
-            <div className={styles.spinner} />
-          </div>
-        )}
-
-        {/* Error message */}
-        {error && !imageData && (
-          <div className={styles.errorMessage}>
-            <p>Failed to load background image</p>
-            <button onClick={handleRefresh}>Try Again</button>
-          </div>
-        )}
-      </div>
-
-      {/* Controls Layer - z-index: 10 (separate from background) */}
-      <div className={styles.controlsLayer}>
-        {/* Left side controls */}
-        <div className={styles.leftControls}>
-          {/* Attribution */}
-          {imageData && !imageData.isPlaceholder && imageData.author && (
-            <div className={styles.attribution}>
-              Photo by{' '}
-              <a
-                href={imageData.authorLink}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {imageData.author}
-              </a>{' '}
-              on{' '}
-              <a
-                href={
-                  imageData.source === 'pexels'
-                    ? 'https://www.pexels.com'
-                    : 'https://pixabay.com'
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {imageData.source === 'pexels' ? 'Pexels' : 'Pixabay'}
-              </a>
-            </div>
-          )}
-
-          {/* Favorite button */}
-          {imageData &&
-            !imageData.isPlaceholder &&
-            backgroundMode === 'random' && (
-              <button
-                className={`${styles.favoriteButton} ${isFavorited ? styles.favorited : ''}`}
-                onClick={handleFavoriteToggle}
-                disabled={isFavorited}
-                aria-label={
-                  isFavorited ? 'Already in favorites' : 'Add to favorites'
-                }
-                title={
-                  language === 'ko'
-                    ? isFavorited
-                      ? '즐겨찾기에 추가됨'
-                      : '즐겨찾기에 추가'
-                    : isFavorited
-                      ? 'Already in favorites'
-                      : 'Add to favorites'
-                }
-              >
-                {isFavorited ? <IoHeart /> : <IoHeartOutline />}
-              </button>
-            )}
+      {/* Loading overlay */}
+      {loading && (
+        <div className={styles.loadingOverlay}>
+          <div className={styles.spinner} />
         </div>
+      )}
 
-        {/* Right side controls */}
-        <div className={styles.controls}>
-          {/* Gallery button */}
-          <button
-            className={`${styles.galleryButton} ${backgroundMode === 'favorite' ? styles.active : ''}`}
-            onClick={() => setShowGallery(true)}
-            aria-label="Open favorites gallery"
-            title={language === 'ko' ? '즐겨찾기' : 'Favorites'}
+      {/* Error message */}
+      {error && !imageData && (
+        <div className={styles.errorMessage}>
+          <p>Failed to load background image</p>
+          <button onClick={handleRetry}>Try Again</button>
+        </div>
+      )}
+
+      {/* Attribution - required by Pexels/Pixabay */}
+      {imageData && !imageData.isPlaceholder && imageData.author && (
+        <div className={styles.attribution}>
+          <a
+            href={imageData.authorLink}
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            <IoGrid />
-            {backgroundFavorites.length > 0 && (
-              <span className={styles.badge}>{backgroundFavorites.length}</span>
-            )}
-          </button>
-
-          {/* Category selector - only in random mode */}
-          {backgroundMode === 'random' && (
-            <div className={styles.categorySelector} ref={categoryMenuRef}>
-              <button
-                className={styles.categoryButton}
-                onClick={toggleCategoryMenu}
-                aria-label="Select category"
-              >
-                <span>{getCurrentCategoryLabel()}</span>
-                <IoChevronDown
-                  className={`${styles.chevron} ${showCategoryMenu ? styles.open : ''}`}
-                />
-              </button>
-
-              {showCategoryMenu && (
-                <div className={styles.categoryMenu}>
-                  {BACKGROUND_CATEGORIES.map((cat) => (
-                    <button
-                      key={cat.id}
-                      className={`${styles.categoryItem} ${category === cat.id ? styles.active : ''}`}
-                      onClick={() => handleCategoryChange(cat.id)}
-                    >
-                      {cat.label[language] || cat.label.ko}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Refresh button - only in random mode */}
-          {backgroundMode === 'random' && (
-            <button
-              className={styles.refreshButton}
-              onClick={handleRefresh}
-              disabled={loading}
-              aria-label="Refresh background image"
-            >
-              <IoRefresh className={loading ? styles.spinning : ''} />
-            </button>
-          )}
+            {imageData.author}
+          </a>
+          {' / '}
+          <a
+            href={
+              imageData.source === 'pexels'
+                ? 'https://www.pexels.com'
+                : 'https://pixabay.com'
+            }
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {imageData.source === 'pexels' ? 'Pexels' : 'Pixabay'}
+          </a>
         </div>
-      </div>
+      )}
 
-      {/* Favorites Gallery Modal */}
-      <FavoritesGallery
-        isOpen={showGallery}
-        onClose={() => setShowGallery(false)}
-      />
-    </>
+    </div>
   );
-};
+});
 
 export default Background;

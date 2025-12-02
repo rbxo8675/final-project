@@ -5,12 +5,12 @@ import Analog from './Analog';
 import DigitalSmall from './DigitalSmall';
 import styles from './Clock.module.css';
 
-const Clock = () => {
+const Clock = ({ style }) => {
   const [time, setTime] = useState(new Date());
-  const { widgets, language } = useSettings();
+  const { language } = useSettings();
 
-  const clockStyle = widgets?.clock?.style || 'digital-large';
-  const enabled = widgets?.clock?.enabled ?? true;
+  // Use prop style if provided, otherwise default to digital-large
+  const clockStyle = style || 'digital-large';
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -19,8 +19,6 @@ const Clock = () => {
 
     return () => clearInterval(timer);
   }, []);
-
-  if (!enabled) return null;
 
   return (
     <div className={styles.clockContainer}>
