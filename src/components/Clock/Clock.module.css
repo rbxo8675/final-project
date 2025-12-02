@@ -1,0 +1,245 @@
+/* Clock Container */
+.clockContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: var(--z-widget);
+  text-align: center;
+  color: white;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  user-select: none;
+}
+
+/* ========================================
+   Digital Large Style
+   ======================================== */
+.digitalLarge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.digitalLarge .time {
+  font-size: 120px;
+  font-weight: 200;
+  letter-spacing: -4px;
+  line-height: 1;
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.digitalLarge .date {
+  font-size: 24px;
+  font-weight: 300;
+  opacity: 0.9;
+  letter-spacing: 1px;
+}
+
+/* ========================================
+   Analog Style
+   ======================================== */
+.analog {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.clockFace {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 4px 30px rgba(0, 0, 0, 0.3),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+/* Hour markers */
+.hourMarker {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  width: 2px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  transform-origin: 50% 90px;
+  border-radius: 1px;
+}
+
+.hourMarker:nth-child(3n+1) {
+  width: 3px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* Clock hands */
+.hand {
+  position: absolute;
+  bottom: 50%;
+  left: 50%;
+  transform-origin: 50% 100%;
+  border-radius: 2px;
+}
+
+.hourHand {
+  width: 4px;
+  height: 55px;
+  background: white;
+  margin-left: -2px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.minuteHand {
+  width: 3px;
+  height: 75px;
+  background: white;
+  margin-left: -1.5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.secondHand {
+  width: 1.5px;
+  height: 85px;
+  background: #ef4444;
+  margin-left: -0.75px;
+  transition: none;
+}
+
+/* Center dot */
+.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.center::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  background: #ef4444;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ========================================
+   Digital Small Style
+   ======================================== */
+.digitalSmall {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-lg);
+}
+
+.timeSmall {
+  font-size: 28px;
+  font-weight: 300;
+  font-family: 'SF Mono', 'Roboto Mono', monospace;
+  letter-spacing: 1px;
+}
+
+.dateSmall {
+  font-size: 14px;
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+/* ========================================
+   Responsive Design
+   ======================================== */
+@media (max-width: 768px) {
+  .digitalLarge .time {
+    font-size: 72px;
+    letter-spacing: -2px;
+  }
+
+  .digitalLarge .date {
+    font-size: 18px;
+  }
+
+  .clockFace {
+    width: 160px;
+    height: 160px;
+  }
+
+  .hourMarker {
+    transform-origin: 50% 70px;
+  }
+
+  .hourHand {
+    height: 45px;
+  }
+
+  .minuteHand {
+    height: 60px;
+  }
+
+  .secondHand {
+    height: 68px;
+  }
+
+  .timeSmall {
+    font-size: 22px;
+  }
+
+  .dateSmall {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .digitalLarge .time {
+    font-size: 56px;
+  }
+
+  .digitalLarge .date {
+    font-size: 14px;
+  }
+
+  .clockFace {
+    width: 140px;
+    height: 140px;
+  }
+
+  .hourMarker {
+    transform-origin: 50% 60px;
+  }
+
+  .hourHand {
+    height: 38px;
+  }
+
+  .minuteHand {
+    height: 52px;
+  }
+
+  .secondHand {
+    height: 58px;
+  }
+
+  .digitalSmall {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm);
+  }
+
+  .timeSmall {
+    font-size: 20px;
+  }
+}
