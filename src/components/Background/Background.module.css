@@ -123,7 +123,11 @@
   width: 100%;
   height: 100%;
   z-index: var(--z-widget);
-  pointer-events: none; /* Allow clicks to pass through to content below */
+  pointer-events: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: var(--spacing-md);
 }
 
 /* Enable pointer events only on interactive elements */
@@ -131,11 +135,15 @@
   pointer-events: auto;
 }
 
+/* Left Controls */
+.leftControls {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--spacing-sm);
+}
+
 /* Attribution */
 .attribution {
-  position: absolute;
-  bottom: var(--spacing-md);
-  left: var(--spacing-md);
   padding: var(--spacing-xs) var(--spacing-sm);
   background-color: rgba(0, 0, 0, 0.5);
   color: rgba(255, 255, 255, 0.8);
@@ -154,14 +162,84 @@
   opacity: 0.8;
 }
 
-/* Controls Container */
+/* Favorite Button */
+.favoriteButton {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xl);
+  backdrop-filter: blur(4px);
+  transition: background-color var(--transition-fast), transform var(--transition-fast), color var(--transition-fast);
+  cursor: pointer;
+}
+
+.favoriteButton:hover:not(:disabled) {
+  background-color: rgba(0, 0, 0, 0.7);
+  transform: scale(1.1);
+  color: #ef4444;
+}
+
+.favoriteButton.favorited {
+  color: #ef4444;
+}
+
+.favoriteButton:disabled {
+  cursor: default;
+}
+
+/* Right Controls Container */
 .controls {
-  position: absolute;
-  bottom: var(--spacing-md);
-  right: var(--spacing-md);
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
+}
+
+/* Gallery Button */
+.galleryButton {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-lg);
+  backdrop-filter: blur(4px);
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+  cursor: pointer;
+}
+
+.galleryButton:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+  transform: scale(1.1);
+}
+
+.galleryButton.active {
+  background-color: var(--color-primary);
+}
+
+.badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-primary);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: var(--radius-full);
 }
 
 /* Category Selector */

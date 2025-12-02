@@ -23,10 +23,18 @@ export const defaultSettings = {
   bookmarks: [],
   todos: [],
 
+  // Background favorites
+  backgroundFavorites: [],
+  currentBackground: null,
+  backgroundMode: 'random', // 'random' | 'favorite'
+
   // API settings
   bibleTranslation: 'korean',
   weatherUnit: 'metric'
 };
+
+// Maximum storage size for uploaded images (5MB)
+export const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
 // Save settings to localStorage
 export const saveSettings = (settings) => {

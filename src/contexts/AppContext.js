@@ -19,7 +19,12 @@ const ACTIONS = {
   TOGGLE_TODO: 'TOGGLE_TODO',
   REMOVE_TODO: 'REMOVE_TODO',
   UPDATE_TODO: 'UPDATE_TODO',
-  RESET_SETTINGS: 'RESET_SETTINGS'
+  RESET_SETTINGS: 'RESET_SETTINGS',
+  // Background favorites
+  ADD_BACKGROUND_FAVORITE: 'ADD_BACKGROUND_FAVORITE',
+  REMOVE_BACKGROUND_FAVORITE: 'REMOVE_BACKGROUND_FAVORITE',
+  SET_CURRENT_BACKGROUND: 'SET_CURRENT_BACKGROUND',
+  SET_BACKGROUND_MODE: 'SET_BACKGROUND_MODE'
 };
 
 // Reducer
@@ -106,6 +111,47 @@ const appReducer = (state, action) => {
     case ACTIONS.RESET_SETTINGS:
       return defaultSettings;
 
+    // Background favorites
+    case ACTIONS.ADD_BACKGROUND_FAVORITE:
+      return {
+        ...state,
+        backgroundFavorites: [
+          ...state.backgroundFavorites,
+          { ...action.payload, id: Date.now().toString(), addedAt: Date.now() }
+        ]
+      };
+
+    case ACTIONS.REMOVE_BACKGROUND_FAVORITE:
+      return {
+        ...state,
+        backgroundFavorites: state.backgroundFavorites.filter(
+          (f) => f.id !== action.payload
+        ),
+        // If removing current background, reset to random mode
+        currentBackground:
+          state.currentBackground?.id === action.payload
+            ? null
+            : state.currentBackground,
+        backgroundMode:
+          state.currentBackground?.id === action.payload
+            ? 'random'
+            : state.backgroundMode
+      };
+
+    case ACTIONS.SET_CURRENT_BACKGROUND:
+      return {
+        ...state,
+        currentBackground: action.payload,
+        backgroundMode: action.payload ? 'favorite' : 'random'
+      };
+
+    case ACTIONS.SET_BACKGROUND_MODE:
+      return {
+        ...state,
+        backgroundMode: action.payload,
+        currentBackground: action.payload === 'random' ? null : state.currentBackground
+      };
+
     default:
       return state;
   }
@@ -187,6 +233,31 @@ export const AppProvider = ({ children }) => {
     dispatch({ type: ACTIONS.RESET_SETTINGS });
   }, []);
 
+  // Background favorites actions
+  const addBackgroundFavorite = useCallback((favorite) => {
+    dispatch({ type: ACTIONS.ADD_BACKGROUND_FAVORITE, payload: favorite });
+  }, []);
+
+  const removeBackgroundFavorite = useCallback((id) => {
+    dispatch({ type: ACTIONS.REMOVE_BACKGROUND_FAVORITE, payload: id });
+  }, []);
+
+  const setCurrentBackground = useCallback((background) => {
+    dispatch({ type: ACTIONS.SET_CURRENT_BACKGROUND, payload: background });
+  }, []);
+
+  const setBackgroundMode = useCallback((mode) => {
+    dispatch({ type: ACTIONS.SET_BACKGROUND_MODE, payload: mode });
+  }, []);
+
+  // Check if an image is in favorites
+  const isBackgroundFavorited = useCallback(
+    (imageId) => {
+      return state.backgroundFavorites.some((f) => f.originalId === imageId);
+    },
+    [state.backgroundFavorites]
+  );
+
   const value = {
     ...state,
     updateTheme,
@@ -201,7 +272,13 @@ export const AppProvider = ({ children }) => {
     toggleTodo,
     removeTodo,
     updateTodo,
-    resetSettings
+    resetSettings,
+    // Background favorites
+    addBackgroundFavorite,
+    removeBackgroundFavorite,
+    setCurrentBackground,
+    setBackgroundMode,
+    isBackgroundFavorited
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
