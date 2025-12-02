@@ -43,6 +43,7 @@ export const defaultSettings = {
   backgroundFavorites: [],
   currentBackground: null,
   backgroundMode: 'random', // 'random' | 'favorite'
+  backgroundPosition: { x: 50, y: 50 }, // 0-100 percentage for object-position
 
   // API settings
   bibleTranslation: 'korean',

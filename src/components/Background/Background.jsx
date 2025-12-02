@@ -8,7 +8,8 @@ const Background = forwardRef(({ onImageChange }, ref) => {
   const {
     widgets,
     currentBackground,
-    backgroundMode
+    backgroundMode,
+    backgroundPosition
   } = useSettings();
 
   const [imageData, setImageData] = useState(null);
@@ -115,6 +116,11 @@ const Background = forwardRef(({ onImageChange }, ref) => {
           src={imageData.url}
           alt={imageData.description || 'Background'}
           className={`${styles.image} ${imageLoaded ? styles.loaded : ''}`}
+          style={{
+            objectPosition: backgroundMode === 'favorite' && backgroundPosition
+              ? `${backgroundPosition.x}% ${backgroundPosition.y}%`
+              : '50% 50%'
+          }}
           onLoad={handleImageLoad}
         />
       )}

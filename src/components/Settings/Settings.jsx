@@ -45,7 +45,9 @@ const Settings = ({ isOpen, onClose }) => {
     addBackgroundFavorite,
     removeBackgroundFavorite,
     setCurrentBackground,
-    setBackgroundMode
+    setBackgroundMode,
+    backgroundPosition,
+    setBackgroundPosition
   } = useSettings();
 
   const [activeTab, setActiveTab] = useState('appearance');
@@ -371,6 +373,57 @@ const Settings = ({ isOpen, onClose }) => {
                         </button>
                       </div>
                     ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Image Position - only in favorite mode */}
+              {backgroundMode === 'favorite' && currentBackground && (
+                <div className={styles.settingGroup}>
+                  <label className={styles.label}>
+                    {language === 'ko' ? '이미지 위치 조정' : 'Adjust Image Position'}
+                  </label>
+                  <div className={styles.positionControl}>
+                    <div className={styles.positionSlider}>
+                      <span>{language === 'ko' ? '가로' : 'Horizontal'}</span>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={backgroundPosition?.x ?? 50}
+                        onChange={(e) =>
+                          setBackgroundPosition({
+                            ...backgroundPosition,
+                            x: Number(e.target.value)
+                          })
+                        }
+                        className={styles.slider}
+                      />
+                      <span>{backgroundPosition?.x ?? 50}%</span>
+                    </div>
+                    <div className={styles.positionSlider}>
+                      <span>{language === 'ko' ? '세로' : 'Vertical'}</span>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={backgroundPosition?.y ?? 50}
+                        onChange={(e) =>
+                          setBackgroundPosition({
+                            ...backgroundPosition,
+                            y: Number(e.target.value)
+                          })
+                        }
+                        className={styles.slider}
+                      />
+                      <span>{backgroundPosition?.y ?? 50}%</span>
+                    </div>
+                    <button
+                      className={styles.resetBtn}
+                      onClick={() => setBackgroundPosition({ x: 50, y: 50 })}
+                    >
+                      {language === 'ko' ? '중앙으로 초기화' : 'Reset to Center'}
+                    </button>
                   </div>
                 </div>
               )}

@@ -29,7 +29,8 @@ const ACTIONS = {
   ADD_BACKGROUND_FAVORITE: 'ADD_BACKGROUND_FAVORITE',
   REMOVE_BACKGROUND_FAVORITE: 'REMOVE_BACKGROUND_FAVORITE',
   SET_CURRENT_BACKGROUND: 'SET_CURRENT_BACKGROUND',
-  SET_BACKGROUND_MODE: 'SET_BACKGROUND_MODE'
+  SET_BACKGROUND_MODE: 'SET_BACKGROUND_MODE',
+  SET_BACKGROUND_POSITION: 'SET_BACKGROUND_POSITION'
 };
 
 // Reducer
@@ -194,6 +195,12 @@ const appReducer = (state, action) => {
         currentBackground: action.payload === 'random' ? null : state.currentBackground
       };
 
+    case ACTIONS.SET_BACKGROUND_POSITION:
+      return {
+        ...state,
+        backgroundPosition: action.payload
+      };
+
     default:
       return state;
   }
@@ -255,7 +262,8 @@ export const AppProvider = ({ children }) => {
     const layoutDefaults = {
       clock: { w: 4, h: 4, minW: 2, minH: 2 },
       weather: { w: 3, h: 4, minW: 2, minH: 3 },
-      quote: { w: 6, h: 2, minW: 3, minH: 2 }
+      quote: { w: 6, h: 2, minW: 3, minH: 2 },
+      bookmarks: { w: 4, h: 4, minW: 2, minH: 2 }
     };
 
     const defaults = layoutDefaults[type] || { w: 2, h: 2, minW: 2, minH: 2 };
@@ -338,6 +346,10 @@ export const AppProvider = ({ children }) => {
     dispatch({ type: ACTIONS.SET_BACKGROUND_MODE, payload: mode });
   }, []);
 
+  const setBackgroundPosition = useCallback((position) => {
+    dispatch({ type: ACTIONS.SET_BACKGROUND_POSITION, payload: position });
+  }, []);
+
   // Check if an image is in favorites
   const isBackgroundFavorited = useCallback(
     (imageId) => {
@@ -371,6 +383,7 @@ export const AppProvider = ({ children }) => {
     removeBackgroundFavorite,
     setCurrentBackground,
     setBackgroundMode,
+    setBackgroundPosition,
     isBackgroundFavorited
   };
 

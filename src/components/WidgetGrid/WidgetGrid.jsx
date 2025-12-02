@@ -5,14 +5,22 @@ import { useSettings } from '../../hooks/useSettings';
 import Clock from '../Clock/Clock';
 import Weather from '../Weather';
 import Quote from '../Quote';
+import Bookmarks from '../Bookmarks';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import styles from './WidgetGrid.module.css';
 
 // Grid configuration
 const COLS = 12;
-const ROW_HEIGHT = 60;
 const MARGIN = [16, 16];
+
+// Calculate row height to make square cells
+const calculateRowHeight = (width) => {
+  // Column width = (gridWidth - (COLS + 1) * margin) / COLS
+  const marginTotal = (COLS + 1) * MARGIN[0];
+  const colWidth = (width - marginTotal) / COLS;
+  return colWidth; // Square cells: rowHeight = colWidth
+};
 
 // Available widget types for gallery
 const WIDGET_TYPES = [
@@ -24,7 +32,11 @@ const WIDGET_TYPES = [
   { type: 'weather', label: { ko: '날씨', en: 'Weather' }, icon: '🌤️', settings: {} },
   // Quote types
   { type: 'quote', label: { ko: '성경 구절', en: 'Bible Verse' }, icon: '✝️', settings: { type: 'bible' } },
-  { type: 'quote', label: { ko: '명언', en: 'Quote' }, icon: '💬', settings: { type: 'quote' } }
+  { type: 'quote', label: { ko: '명언', en: 'Quote' }, icon: '💬', settings: { type: 'quote' } },
+  // Bookmarks - 3 sizes
+  { type: 'bookmarks', label: { ko: '북마크 (큰)', en: 'Bookmarks (Large)' }, icon: '🔖', settings: { size: 'large' } },
+  { type: 'bookmarks', label: { ko: '북마크 (중간)', en: 'Bookmarks (Medium)' }, icon: '📑', settings: { size: 'medium' } },
+  { type: 'bookmarks', label: { ko: '북마크 (작은)', en: 'Bookmarks (Small)' }, icon: '📌', settings: { size: 'small' } }
 ];
 
 const WidgetGrid = () => {
@@ -91,6 +103,8 @@ const WidgetGrid = () => {
         return <Weather />;
       case 'quote':
         return <Quote type={settings?.type} />;
+      case 'bookmarks':
+        return <Bookmarks size={settings?.size} />;
       default:
         return null;
     }
@@ -160,7 +174,7 @@ const WidgetGrid = () => {
         className={`${styles.grid} ${isEditing ? styles.editing : ''}`}
         layout={currentLayout}
         cols={COLS}
-        rowHeight={ROW_HEIGHT}
+        rowHeight={calculateRowHeight(gridWidth)}
         width={gridWidth}
         margin={MARGIN}
         isDraggable={isEditing}

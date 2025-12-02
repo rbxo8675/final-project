@@ -58,16 +58,12 @@
   bottom: 0;
   background: transparent;
   border-radius: var(--radius-lg);
-  cursor: grab;
   z-index: 10;
   display: flex;
   align-items: flex-start;
   justify-content: center;
   padding-top: 8px;
-}
-
-.editOverlay:active {
-  cursor: grabbing;
+  pointer-events: none; /* Allow clicks to pass through */
 }
 
 /* Drag Indicator - small top bar */
@@ -83,6 +79,12 @@
   letter-spacing: 2px;
   user-select: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  cursor: grab;
+  pointer-events: auto; /* Only this element captures events */
+}
+
+.dragIndicator:active {
+  cursor: grabbing;
 }
 
 /* Delete Button */
@@ -123,6 +125,9 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  position: relative;
+  z-index: 5;
+  pointer-events: auto;
 }
 
 /* Edit Mode Indicator */
