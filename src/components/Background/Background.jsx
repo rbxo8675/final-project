@@ -1,26 +1,33 @@
-import { useState, useEffect, useCallback } from 'react';
-import { IoRefresh } from 'react-icons/io5';
+import { useState, useEffect, useRef } from 'react';
+import { IoRefresh, IoChevronDown } from 'react-icons/io5';
 import { useSettings } from '../../hooks/useSettings';
-import { getRandomImage, triggerDownload } from '../../services/unsplash';
+import {
+  getRandomImage,
+  triggerDownload,
+  BACKGROUND_CATEGORIES
+} from '../../services/unsplash';
 import styles from './Background.module.css';
 
 const Background = () => {
-  const { widgets } = useSettings();
+  const { widgets, language, updateWidgetSettings } = useSettings();
   const [imageData, setImageData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [error, setError] = useState(null);
+  const [showCategoryMenu, setShowCategoryMenu] = useState(false);
+  const categoryMenuRef = useRef(null);
 
   const category = widgets?.background?.category || 'nature';
   const enabled = widgets?.background?.enabled ?? true;
 
-  const loadImage = useCallback(async () => {
+  // Load image function
+  const loadImage = async (cat) => {
     setLoading(true);
     setImageLoaded(false);
     setError(null);
 
     try {
-      const data = await getRandomImage(category);
+      const data = await getRandomImage(cat);
       setImageData(data);
 
       // Trigger download for Unsplash API guidelines
@@ -32,20 +39,50 @@ const Background = () => {
     } finally {
       setLoading(false);
     }
-  }, [category]);
+  };
 
+  // Load image on mount and when category changes
   useEffect(() => {
     if (enabled) {
-      loadImage();
+      loadImage(category);
     }
-  }, [enabled, loadImage]);
+  }, [enabled, category]);
+
+  // Close category menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        categoryMenuRef.current &&
+        !categoryMenuRef.current.contains(event.target)
+      ) {
+        setShowCategoryMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleRefresh = () => {
-    loadImage();
+    loadImage(category);
   };
 
   const handleImageLoad = () => {
     setImageLoaded(true);
+  };
+
+  const handleCategoryChange = (newCategory) => {
+    updateWidgetSettings('background', { category: newCategory });
+    setShowCategoryMenu(false);
+  };
+
+  const toggleCategoryMenu = () => {
+    setShowCategoryMenu((prev) => !prev);
+  };
+
+  const getCurrentCategoryLabel = () => {
+    const cat = BACKGROUND_CATEGORIES.find((c) => c.id === category);
+    return cat ? cat.label[language] || cat.label.ko : category;
   };
 
   if (!enabled) {
@@ -109,15 +146,46 @@ const Background = () => {
         </div>
       )}
 
-      {/* Refresh button */}
-      <button
-        className={styles.refreshButton}
-        onClick={handleRefresh}
-        disabled={loading}
-        aria-label="Refresh background image"
-      >
-        <IoRefresh className={loading ? styles.spinning : ''} />
-      </button>
+      {/* Controls */}
+      <div className={styles.controls}>
+        {/* Category selector */}
+        <div className={styles.categorySelector} ref={categoryMenuRef}>
+          <button
+            className={styles.categoryButton}
+            onClick={toggleCategoryMenu}
+            aria-label="Select category"
+          >
+            <span>{getCurrentCategoryLabel()}</span>
+            <IoChevronDown
+              className={`${styles.chevron} ${showCategoryMenu ? styles.open : ''}`}
+            />
+          </button>
+
+          {showCategoryMenu && (
+            <div className={styles.categoryMenu}>
+              {BACKGROUND_CATEGORIES.map((cat) => (
+                <button
+                  key={cat.id}
+                  className={`${styles.categoryItem} ${category === cat.id ? styles.active : ''}`}
+                  onClick={() => handleCategoryChange(cat.id)}
+                >
+                  {cat.label[language] || cat.label.ko}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Refresh button */}
+        <button
+          className={styles.refreshButton}
+          onClick={handleRefresh}
+          disabled={loading}
+          aria-label="Refresh background image"
+        >
+          <IoRefresh className={loading ? styles.spinning : ''} />
+        </button>
+      </div>
     </div>
   );
 };

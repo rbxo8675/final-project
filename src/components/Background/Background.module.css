@@ -115,11 +115,95 @@
   opacity: 0.8;
 }
 
-/* Refresh Button */
-.refreshButton {
+/* Controls Container */
+.controls {
   position: absolute;
   bottom: var(--spacing-md);
   right: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  z-index: 3;
+}
+
+/* Category Selector */
+.categorySelector {
+  position: relative;
+}
+
+.categoryButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  backdrop-filter: blur(4px);
+  transition: background-color var(--transition-fast);
+  cursor: pointer;
+}
+
+.categoryButton:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.chevron {
+  font-size: var(--font-size-sm);
+  transition: transform var(--transition-fast);
+}
+
+.chevron.open {
+  transform: rotate(180deg);
+}
+
+.categoryMenu {
+  position: absolute;
+  bottom: calc(100% + var(--spacing-xs));
+  right: 0;
+  min-width: 120px;
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.categoryItem {
+  display: block;
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: var(--font-size-sm);
+  text-align: left;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+  cursor: pointer;
+}
+
+.categoryItem:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.categoryItem.active {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+/* Refresh Button */
+.refreshButton {
   width: 40px;
   height: 40px;
   display: flex;
@@ -129,9 +213,9 @@
   color: white;
   border-radius: var(--radius-full);
   font-size: var(--font-size-lg);
-  z-index: 3;
   backdrop-filter: blur(4px);
   transition: background-color var(--transition-fast), transform var(--transition-fast);
+  cursor: pointer;
 }
 
 .refreshButton:hover:not(:disabled) {
