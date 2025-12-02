@@ -1,4 +1,4 @@
-import { createContext, useReducer, useEffect, useCallback } from 'react';
+import { createContext, useReducer, useEffect, useCallback, useState } from 'react';
 import { loadSettings, saveSettings, defaultSettings } from '../utils/storage';
 
 // Create Context
@@ -16,6 +16,10 @@ const ACTIONS = {
   ADD_WIDGET_INSTANCE: 'ADD_WIDGET_INSTANCE',
   REMOVE_WIDGET_INSTANCE: 'REMOVE_WIDGET_INSTANCE',
   UPDATE_WIDGET_INSTANCE: 'UPDATE_WIDGET_INSTANCE',
+  // Widget data (for widgets that store their own data)
+  SET_WIDGET_DATA: 'SET_WIDGET_DATA',
+  UPDATE_WIDGET_DATA: 'UPDATE_WIDGET_DATA',
+  DELETE_WIDGET_DATA: 'DELETE_WIDGET_DATA',
   ADD_BOOKMARK: 'ADD_BOOKMARK',
   REMOVE_BOOKMARK: 'REMOVE_BOOKMARK',
   UPDATE_BOOKMARK: 'UPDATE_BOOKMARK',
@@ -80,10 +84,14 @@ const appReducer = (state, action) => {
 
     case ACTIONS.REMOVE_WIDGET_INSTANCE: {
       const instanceId = action.payload;
+      // Also remove widget data if exists
+      const newWidgetData = { ...(state.widgetData || {}) };
+      delete newWidgetData[instanceId];
       return {
         ...state,
         widgetInstances: (state.widgetInstances || []).filter(w => w.id !== instanceId),
-        layout: (state.layout || []).filter(l => l.i !== instanceId)
+        layout: (state.layout || []).filter(l => l.i !== instanceId),
+        widgetData: newWidgetData
       };
     }
 
@@ -94,6 +102,42 @@ const appReducer = (state, action) => {
         widgetInstances: (state.widgetInstances || []).map(w =>
           w.id === id ? { ...w, settings: { ...w.settings, ...settings } } : w
         )
+      };
+    }
+
+    // Widget data management (for todo, sticky, kanban, etc.)
+    case ACTIONS.SET_WIDGET_DATA: {
+      const { widgetId, data } = action.payload;
+      return {
+        ...state,
+        widgetData: {
+          ...(state.widgetData || {}),
+          [widgetId]: data
+        }
+      };
+    }
+
+    case ACTIONS.UPDATE_WIDGET_DATA: {
+      const { widgetId, data } = action.payload;
+      return {
+        ...state,
+        widgetData: {
+          ...(state.widgetData || {}),
+          [widgetId]: {
+            ...(state.widgetData?.[widgetId] || {}),
+            ...data
+          }
+        }
+      };
+    }
+
+    case ACTIONS.DELETE_WIDGET_DATA: {
+      const widgetId = action.payload;
+      const newWidgetData = { ...(state.widgetData || {}) };
+      delete newWidgetData[widgetId];
+      return {
+        ...state,
+        widgetData: newWidgetData
       };
     }
 
@@ -208,18 +252,21 @@ const appReducer = (state, action) => {
 
 // Provider Component
 export const AppProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(appReducer, defaultSettings);
+  // Lazy initialization - load from localStorage immediately
+  const [state, dispatch] = useReducer(appReducer, null, () => loadSettings());
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // Load settings from localStorage on mount
+  // Mark as initialized after first render
   useEffect(() => {
-    const savedSettings = loadSettings();
-    dispatch({ type: ACTIONS.SET_SETTINGS, payload: savedSettings });
+    setIsInitialized(true);
   }, []);
 
-  // Save to localStorage whenever state changes
+  // Save to localStorage whenever state changes (but not on initial load)
   useEffect(() => {
-    saveSettings(state);
-  }, [state]);
+    if (isInitialized) {
+      saveSettings(state);
+    }
+  }, [state, isInitialized]);
 
   // Apply theme to document
   useEffect(() => {
@@ -263,7 +310,10 @@ export const AppProvider = ({ children }) => {
       clock: { w: 4, h: 4, minW: 2, minH: 2 },
       weather: { w: 3, h: 4, minW: 2, minH: 3 },
       quote: { w: 6, h: 2, minW: 3, minH: 2 },
-      bookmarks: { w: 4, h: 4, minW: 2, minH: 2 }
+      bookmarks: { w: 4, h: 4, minW: 2, minH: 2 },
+      todo: { w: 3, h: 4, minW: 2, minH: 3 },
+      sticky: { w: 3, h: 3, minW: 2, minH: 2 },
+      kanban: { w: 6, h: 4, minW: 4, minH: 3 }
     };
 
     const defaults = layoutDefaults[type] || { w: 2, h: 2, minW: 2, minH: 2 };
@@ -292,6 +342,25 @@ export const AppProvider = ({ children }) => {
       payload: { id, settings }
     });
   }, []);
+
+  // Widget data management
+  const setWidgetData = useCallback((widgetId, data) => {
+    dispatch({
+      type: ACTIONS.SET_WIDGET_DATA,
+      payload: { widgetId, data }
+    });
+  }, []);
+
+  const updateWidgetData = useCallback((widgetId, data) => {
+    dispatch({
+      type: ACTIONS.UPDATE_WIDGET_DATA,
+      payload: { widgetId, data }
+    });
+  }, []);
+
+  const getWidgetData = useCallback((widgetId) => {
+    return state.widgetData?.[widgetId] || null;
+  }, [state.widgetData]);
 
   const addBookmark = useCallback((bookmark) => {
     dispatch({ type: ACTIONS.ADD_BOOKMARK, payload: bookmark });
@@ -369,6 +438,10 @@ export const AppProvider = ({ children }) => {
     addWidgetInstance,
     removeWidgetInstance,
     updateWidgetInstance,
+    // Widget data
+    setWidgetData,
+    updateWidgetData,
+    getWidgetData,
     addBookmark,
     removeBookmark,
     updateBookmark,

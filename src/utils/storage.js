@@ -38,6 +38,7 @@ export const defaultSettings = {
   // Data
   bookmarks: [],
   todos: [],
+  widgetData: {}, // Per-widget data storage (for todo, sticky, kanban, etc.)
 
   // Background favorites
   backgroundFavorites: [],

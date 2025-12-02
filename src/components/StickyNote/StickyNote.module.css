@@ -1,0 +1,177 @@
+/* Container */
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--sticky-bg, #fef3c7);
+  border-radius: 4px;
+  position: relative;
+  box-shadow:
+    2px 2px 8px rgba(0, 0, 0, 0.15),
+    0 0 1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Edit mode - disable pointer events to allow grid drag */
+.container.editMode {
+  pointer-events: none;
+}
+
+.container.editMode .colorPickerWrapper {
+  pointer-events: auto;
+}
+
+/* Sticky note paper texture */
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.08),
+    transparent
+  );
+  pointer-events: none;
+}
+
+/* Corner fold effect */
+.cornerFold {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(
+    135deg,
+    transparent 50%,
+    rgba(0, 0, 0, 0.1) 50%,
+    rgba(0, 0, 0, 0.15) 100%
+  );
+  pointer-events: none;
+}
+
+/* Color Picker Wrapper */
+.colorPickerWrapper {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 20;
+}
+
+/* Color Picker Button */
+.colorPickerBtn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 50%;
+  color: var(--sticky-text);
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.6;
+}
+
+.colorPickerBtn:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+/* Color Picker Dropdown */
+.colorPicker {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  padding: 8px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  z-index: 30;
+}
+
+.colorOption {
+  width: 28px;
+  height: 28px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.colorOption:hover {
+  transform: scale(1.1);
+}
+
+.colorOption.active {
+  border-color: #333;
+  box-shadow: 0 0 0 2px white, 0 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Textarea */
+.textarea {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--sticky-text, #92400e);
+}
+
+.textarea::placeholder {
+  color: var(--sticky-text, #92400e);
+  opacity: 0.5;
+}
+
+/* Font style for handwritten feel - optional */
+.handwritten .textarea {
+  font-family: 'Caveat', 'Nanum Pen Script', cursive;
+  font-size: 18px;
+}
+
+/* Scrollbar */
+.textarea::-webkit-scrollbar {
+  width: 4px;
+}
+
+.textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.textarea::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 2px;
+}
+
+.textarea::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* Lines pattern (optional, disabled by default) */
+.lined .textarea {
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 23px,
+    rgba(0, 0, 0, 0.1) 23px,
+    rgba(0, 0, 0, 0.1) 24px
+  );
+  background-size: 100% 24px;
+  line-height: 24px;
+  padding-top: 12px;
+}

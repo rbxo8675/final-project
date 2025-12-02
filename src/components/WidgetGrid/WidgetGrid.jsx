@@ -6,6 +6,9 @@ import Clock from '../Clock/Clock';
 import Weather from '../Weather';
 import Quote from '../Quote';
 import Bookmarks from '../Bookmarks';
+import TodoList from '../TodoList';
+import StickyNote from '../StickyNote';
+import Kanban from '../Kanban';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import styles from './WidgetGrid.module.css';
@@ -36,7 +39,11 @@ const WIDGET_TYPES = [
   // Bookmarks - 3 sizes
   { type: 'bookmarks', label: { ko: '북마크 (큰)', en: 'Bookmarks (Large)' }, icon: '🔖', settings: { size: 'large' } },
   { type: 'bookmarks', label: { ko: '북마크 (중간)', en: 'Bookmarks (Medium)' }, icon: '📑', settings: { size: 'medium' } },
-  { type: 'bookmarks', label: { ko: '북마크 (작은)', en: 'Bookmarks (Small)' }, icon: '📌', settings: { size: 'small' } }
+  { type: 'bookmarks', label: { ko: '북마크 (작은)', en: 'Bookmarks (Small)' }, icon: '📌', settings: { size: 'small' } },
+  // Task Management
+  { type: 'todo', label: { ko: '할 일 목록', en: 'Todo List' }, icon: '✅', settings: {} },
+  { type: 'sticky', label: { ko: '스티키 노트', en: 'Sticky Note' }, icon: '📝', settings: { color: 'yellow' } },
+  { type: 'kanban', label: { ko: '칸반 보드', en: 'Kanban Board' }, icon: '📋', settings: {} }
 ];
 
 const WidgetGrid = () => {
@@ -94,7 +101,7 @@ const WidgetGrid = () => {
 
   // Render widget by type
   const renderWidget = (instance) => {
-    const { type, settings } = instance;
+    const { id, type, settings } = instance;
 
     switch (type) {
       case 'clock':
@@ -105,6 +112,12 @@ const WidgetGrid = () => {
         return <Quote type={settings?.type} />;
       case 'bookmarks':
         return <Bookmarks size={settings?.size} />;
+      case 'todo':
+        return <TodoList widgetId={id} />;
+      case 'sticky':
+        return <StickyNote widgetId={id} color={settings?.color} />;
+      case 'kanban':
+        return <Kanban widgetId={id} />;
       default:
         return null;
     }
@@ -182,7 +195,7 @@ const WidgetGrid = () => {
         onLayoutChange={handleLayoutChange}
         draggableHandle=".widget-drag-handle"
         compactType={null}
-        preventCollision={true}
+        preventCollision={false}
         useCSSTransforms={true}
         isBounded={true}
       >

@@ -1,0 +1,351 @@
+/* Container */
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+}
+
+/* Edit mode - disable pointer events to allow grid drag */
+.container.editMode {
+  pointer-events: none;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.count {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+/* List */
+.list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 13px;
+  font-style: italic;
+}
+
+/* Todo Item */
+.item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.item.completed {
+  opacity: 0.6;
+}
+
+.item.completed .text {
+  text-decoration: line-through;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Checkbox */
+.checkbox {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.4);
+  flex-shrink: 0;
+}
+
+.checkIcon {
+  color: #10b981;
+  font-size: 18px;
+}
+
+.emptyIcon {
+  font-size: 16px;
+  opacity: 0.3;
+}
+
+.item:hover .checkbox .emptyIcon {
+  opacity: 0.6;
+}
+
+/* Text */
+.text {
+  flex: 1;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Edit Input */
+.editInput {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 13px;
+  color: white;
+  outline: none;
+}
+
+.editInput:focus {
+  border-color: #3b82f6;
+}
+
+/* Delete Button */
+.deleteBtn {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.3);
+  opacity: 0;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.item:hover .deleteBtn {
+  opacity: 1;
+}
+
+.deleteBtn:hover {
+  color: #ef4444;
+}
+
+/* Add Form */
+.addForm {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.addInput {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: white;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.addInput:focus {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.addInput::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.addBtn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #3b82f6;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.addBtn:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.addBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Widget Style Variants */
+/* Glass */
+.style_glass {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Solid */
+.style_solid {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.style_solid .title,
+.style_solid .text {
+  color: #1a1a1a;
+}
+
+.style_solid .count {
+  color: #666;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.style_solid .empty {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.style_solid .item {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.style_solid .item:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.style_solid .item.completed .text {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.style_solid .checkbox {
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.style_solid .deleteBtn {
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.style_solid .header,
+.style_solid .addForm {
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.style_solid .addInput {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #1a1a1a;
+}
+
+.style_solid .addInput::placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.style_solid .editInput {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.2);
+  color: #1a1a1a;
+}
+
+/* Minimal */
+.style_minimal {
+  background: transparent;
+}
+
+/* Neon */
+.style_neon {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(0, 245, 255, 0.5);
+  box-shadow: 0 0 10px rgba(0, 245, 255, 0.2);
+}
+
+.style_neon .title {
+  color: rgba(0, 245, 255, 0.9);
+}
+
+.style_neon .text {
+  color: rgba(0, 245, 255, 0.8);
+}
+
+.style_neon .checkIcon {
+  color: #0ff;
+}
+
+.style_neon .addBtn {
+  background: rgba(0, 245, 255, 0.3);
+  border: 1px solid rgba(0, 245, 255, 0.5);
+}
+
+.style_neon .addBtn:hover:not(:disabled) {
+  background: rgba(0, 245, 255, 0.5);
+}
+
+.style_neon .header,
+.style_neon .addForm {
+  border-color: rgba(0, 245, 255, 0.3);
+}
+
+/* Frosted */
+.style_frosted {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Scrollbar */
+.list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+}
+
+.list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}

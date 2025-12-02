@@ -1,0 +1,512 @@
+/* Container */
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+}
+
+/* Edit mode - disable pointer events to allow grid drag */
+.container.editMode {
+  pointer-events: none;
+}
+
+/* Column */
+.column {
+  flex: 1;
+  min-width: 160px;
+  max-width: 280px;
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px;
+  transition: all 0.2s ease;
+}
+
+.column.dragOver {
+  background: rgba(59, 130, 246, 0.15);
+  box-shadow: inset 0 0 0 2px rgba(59, 130, 246, 0.4);
+}
+
+/* Column Header */
+.columnHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px;
+  margin-bottom: 10px;
+}
+
+.columnTitle {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.itemCount {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 8px;
+}
+
+/* Cards Container */
+.cards {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+/* Card */
+.card {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  cursor: grab;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.card:active {
+  cursor: grabbing;
+}
+
+.card.dragging {
+  opacity: 0.5;
+  transform: scale(0.98);
+}
+
+.cardText {
+  flex: 1;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+/* Delete Button */
+.deleteBtn {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.3);
+  opacity: 0;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.card:hover .deleteBtn {
+  opacity: 1;
+}
+
+.deleteBtn:hover {
+  color: #ef4444;
+}
+
+/* Add Card Button */
+.addCardBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px;
+  background: transparent;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 4px;
+}
+
+.addCardBtn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.addCardBtn svg {
+  font-size: 16px;
+}
+
+/* Add Form */
+.addForm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.addInput {
+  width: 100%;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  font-size: 12px;
+  color: white;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.addInput:focus {
+  border-color: #3b82f6;
+}
+
+.addInput::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.addFormActions {
+  display: flex;
+  gap: 6px;
+}
+
+.addConfirmBtn {
+  flex: 1;
+  padding: 6px 12px;
+  background: #3b82f6;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.addConfirmBtn:hover {
+  background: #2563eb;
+}
+
+.addCancelBtn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.addCancelBtn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+
+/* Complete Drop Zone */
+.completeZone {
+  min-width: 80px;
+  max-width: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 2px dashed rgba(16, 185, 129, 0.3);
+  border-radius: 10px;
+  padding: 16px 12px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.completeIcon {
+  font-size: 28px;
+  color: rgba(16, 185, 129, 0.5);
+  transition: all 0.3s ease;
+}
+
+.completeText {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(16, 185, 129, 0.6);
+  transition: all 0.3s ease;
+}
+
+.completeZone.dragOverComplete {
+  background: rgba(16, 185, 129, 0.25);
+  border-color: rgba(16, 185, 129, 0.8);
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+}
+
+.completeZone.dragOverComplete .completeIcon {
+  color: #10b981;
+  transform: scale(1.2);
+}
+
+.completeZone.dragOverComplete .completeText {
+  color: #10b981;
+}
+
+/* Complete Effect Animation */
+.completeEffect {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: completeAnimation 0.8s ease-out forwards;
+}
+
+.completeEffect svg {
+  font-size: 60px;
+  color: #10b981;
+}
+
+@keyframes completeAnimation {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  30% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.5);
+  }
+}
+
+.completeZone.showEffect {
+  background: rgba(16, 185, 129, 0.3);
+}
+
+/* Widget Style Variants */
+/* Glass */
+.style_glass {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Solid */
+.style_solid {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.style_solid .column {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.style_solid .column.dragOver {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.style_solid .columnTitle {
+  color: #1a1a1a;
+}
+
+.style_solid .itemCount {
+  color: #666;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.style_solid .card {
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.style_solid .card:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.style_solid .cardText {
+  color: #1a1a1a;
+}
+
+.style_solid .deleteBtn {
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.style_solid .addCardBtn {
+  border-color: rgba(0, 0, 0, 0.15);
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.style_solid .addCardBtn:hover {
+  background: rgba(0, 0, 0, 0.03);
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.style_solid .addInput {
+  background: white;
+  border-color: rgba(0, 0, 0, 0.15);
+  color: #1a1a1a;
+}
+
+.style_solid .addInput::placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.style_solid .addCancelBtn {
+  background: rgba(0, 0, 0, 0.05);
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.style_solid .completeZone {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+.style_solid .completeIcon {
+  color: rgba(16, 185, 129, 0.4);
+}
+
+.style_solid .completeText {
+  color: rgba(16, 185, 129, 0.5);
+}
+
+/* Minimal */
+.style_minimal {
+  background: transparent;
+}
+
+.style_minimal .column {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Neon */
+.style_neon {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(0, 245, 255, 0.5);
+  box-shadow: 0 0 10px rgba(0, 245, 255, 0.2);
+}
+
+.style_neon .column {
+  background: rgba(0, 245, 255, 0.05);
+  border: 1px solid rgba(0, 245, 255, 0.2);
+}
+
+.style_neon .column.dragOver {
+  background: rgba(0, 245, 255, 0.15);
+  box-shadow: inset 0 0 0 2px rgba(0, 245, 255, 0.4);
+}
+
+.style_neon .columnTitle {
+  color: rgba(0, 245, 255, 0.9);
+}
+
+.style_neon .card {
+  background: rgba(0, 245, 255, 0.1);
+  border: 1px solid rgba(0, 245, 255, 0.3);
+}
+
+.style_neon .card:hover {
+  background: rgba(0, 245, 255, 0.15);
+}
+
+.style_neon .cardText {
+  color: rgba(0, 245, 255, 0.9);
+}
+
+.style_neon .addConfirmBtn {
+  background: rgba(0, 245, 255, 0.3);
+  border: 1px solid rgba(0, 245, 255, 0.5);
+}
+
+.style_neon .addConfirmBtn:hover {
+  background: rgba(0, 245, 255, 0.5);
+}
+
+.style_neon .completeZone {
+  background: rgba(0, 255, 100, 0.05);
+  border-color: rgba(0, 255, 100, 0.3);
+}
+
+.style_neon .completeIcon {
+  color: rgba(0, 255, 100, 0.5);
+}
+
+.style_neon .completeText {
+  color: rgba(0, 255, 100, 0.6);
+}
+
+.style_neon .completeZone.dragOverComplete {
+  background: rgba(0, 255, 100, 0.2);
+  border-color: rgba(0, 255, 100, 0.8);
+  box-shadow: 0 0 20px rgba(0, 255, 100, 0.4);
+}
+
+.style_neon .completeZone.dragOverComplete .completeIcon {
+  color: #00ff64;
+}
+
+.style_neon .completeEffect svg {
+  color: #00ff64;
+}
+
+/* Frosted */
+.style_frosted {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.style_frosted .column {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Scrollbar */
+.cards::-webkit-scrollbar {
+  width: 4px;
+}
+
+.cards::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.cards::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+}
+
+.cards::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.container::-webkit-scrollbar {
+  height: 4px;
+}
+
+.container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+}
