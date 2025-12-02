@@ -12,7 +12,7 @@
 
 | Phase | 제목 | 상태 | 진행률 | 시작일 | 완료일 |
 |-------|------|------|--------|--------|--------|
-| 01 | 프로젝트 초기 설정 | ⬜ | 0% | - | - |
+| 01 | 프로젝트 초기 설정 | ✅ | 100% | 2025-12-02 | 2025-12-02 |
 | 02 | Context 및 localStorage | ⬜ | 0% | - | - |
 | 03 | 배경 이미지 | ⬜ | 0% | - | - |
 | 04 | 시계/날짜 | ⬜ | 0% | - | - |
@@ -30,11 +30,11 @@
 ## 상세 체크리스트
 
 ### Phase 01: 프로젝트 초기 설정
-- [ ] 프로젝트 구조 생성 (components, contexts, hooks, services, utils)
-- [ ] react-icons 설치
-- [ ] App.js 기본 레이아웃 설정
-- [ ] CSS 초기화 및 기본 스타일 변수 정의
-- [ ] .env 파일 설정
+- [x] 프로젝트 구조 생성 (components, contexts, hooks, services, utils)
+- [x] react-icons 설치
+- [x] App.js 기본 레이아웃 설정
+- [x] CSS 초기화 및 기본 스타일 변수 정의
+- [x] .env 파일 설정
 
 ### Phase 02: Context 및 localStorage
 - [ ] AppContext 생성
@@ -109,7 +109,7 @@
 
 | 날짜 | 내용 |
 |------|------|
-| YYYY-MM-DD | 프로젝트 시작 |
+| 2025-12-02 | Phase 01 완료 - 프로젝트 초기 설정 (폴더 구조, react-icons, CSS 변수, .env) |
 
 ---
 
