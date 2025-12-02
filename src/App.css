@@ -25,11 +25,48 @@
   z-index: var(--z-base);
   width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-xl);
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-rows: auto 1fr auto;
+  gap: 24px;
+  padding: 40px;
+  align-items: start;
+}
+
+/* 시계 - 중앙 상단 */
+.main-content > :nth-child(1) {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: center;
+}
+
+/* 날씨 - 우측 상단 */
+.main-content > :nth-child(2) {
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: end;
+}
+
+/* 명언 - 하단 중앙 */
+.main-content > :nth-child(3) {
+  grid-column: 2;
+  grid-row: 3;
+  justify-self: center;
+  align-self: end;
+}
+
+/* 북마크 - 좌측 중앙 (나중에 추가됨) */
+.main-content > :nth-child(4) {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: center;
+}
+
+/* 할일 - 우측 중앙 (나중에 추가됨) */
+.main-content > :nth-child(5) {
+  grid-column: 3;
+  grid-row: 2;
+  align-self: start;
 }
 
 /* Widget Common Styles */
