@@ -21,7 +21,7 @@ export const BACKGROUND_CATEGORIES = [
 ];
 
 // Get random image from Pixabay
-const getPixabayImage = async (category) => {
+const getPixabayImage = async (category, editorsChoice = true) => {
   if (!PIXABAY_API_KEY) {
     throw new Error('Pixabay API key not configured');
   }
@@ -34,13 +34,18 @@ const getPixabayImage = async (category) => {
     q: query,
     category: categoryConfig.pixabay,
     orientation: 'horizontal',
-    min_width: 1920,
-    min_height: 1080,
+    min_width: 2560,  // Require at least 2K width
+    min_height: 1440, // Require at least 2K height
     image_type: 'photo',
     safesearch: 'true',
     per_page: 100,
-    page: Math.floor(Math.random() * 5) + 1 // Random page 1-5
+    page: Math.floor(Math.random() * 3) + 1 // Random page 1-3
   });
+
+  // Only add editors_choice if requested
+  if (editorsChoice) {
+    params.set('editors_choice', 'true');
+  }
 
   const response = await fetch(`${PIXABAY_BASE_URL}?${params}`);
 
@@ -50,6 +55,12 @@ const getPixabayImage = async (category) => {
 
   const data = await response.json();
 
+  // If no editor's choice images, try without that filter
+  if ((!data.hits || data.hits.length === 0) && editorsChoice) {
+    console.log('No editor\'s choice images, trying regular images...');
+    return getPixabayImage(category, false);
+  }
+
   if (!data.hits || data.hits.length === 0) {
     throw new Error('No images found from Pixabay');
   }
@@ -58,18 +69,24 @@ const getPixabayImage = async (category) => {
   const randomIndex = Math.floor(Math.random() * data.hits.length);
   const image = data.hits[randomIndex];
 
+  // Use highest resolution available
+  // Pixabay provides: fullHDURL (1920px), largeImageURL (1280px), imageURL (640px)
+  const highResUrl = image.fullHDURL || image.largeImageURL;
+
   return {
     id: `pixabay-${image.id}`,
-    url: image.largeImageURL, // 1280px
-    fullUrl: image.fullHDURL || image.largeImageURL, // 1920px if available
+    url: highResUrl, // Use Full HD (1920px) when available
+    fullUrl: highResUrl,
     thumbUrl: image.previewURL,
-    rawUrl: image.largeImageURL,
+    rawUrl: highResUrl,
     author: image.user,
     authorLink: `https://pixabay.com/users/${image.user}-${image.user_id}/`,
     description: image.tags,
     color: '#1a1a1a',
     source: 'pixabay',
-    sourceLink: image.pageURL
+    sourceLink: image.pageURL,
+    width: image.imageWidth,
+    height: image.imageHeight
   };
 };
 
@@ -110,9 +127,11 @@ const getPexelsImage = async (category) => {
   const randomIndex = Math.floor(Math.random() * data.photos.length);
   const image = data.photos[randomIndex];
 
+  // Use original resolution for best quality
+  // Pexels provides: original (full res), large2x (1880px), large (940px)
   return {
     id: `pexels-${image.id}`,
-    url: image.src.large2x, // 1880px
+    url: image.src.original, // Use original full resolution
     fullUrl: image.src.original,
     thumbUrl: image.src.medium,
     rawUrl: image.src.original,
@@ -121,7 +140,9 @@ const getPexelsImage = async (category) => {
     description: image.alt || '',
     color: image.avg_color || '#1a1a1a',
     source: 'pexels',
-    sourceLink: image.url
+    sourceLink: image.url,
+    width: image.width,
+    height: image.height
   };
 };
 
