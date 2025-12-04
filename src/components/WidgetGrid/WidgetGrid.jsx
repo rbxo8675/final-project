@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { IoClose, IoAdd, IoCheckmark } from 'react-icons/io5';
+import { IoClose, IoAdd, IoCheckmark, IoTrash } from 'react-icons/io5';
 import { useSettings } from '../../hooks/useSettings';
 import Clock from '../Clock/Clock';
 import Weather from '../Weather';
@@ -11,9 +11,9 @@ import Kanban from '../Kanban';
 import styles from './WidgetGrid.module.css';
 
 // Grid configuration
-const COLS = 12;
-const ROWS = 8;
-const GAP = 16;
+const COLS = 16;
+const ROWS = 10;
+const GAP = 12;
 
 // Available widget types
 const WIDGET_TYPES = [
@@ -300,6 +300,15 @@ const WidgetGrid = () => {
     removeWidgetInstance(id);
   };
 
+  // Remove all widgets
+  const handleRemoveAllWidgets = () => {
+    if (window.confirm(language === 'ko' ? '모든 위젯을 삭제하시겠습니까?' : 'Delete all widgets?')) {
+      instances.forEach(instance => {
+        removeWidgetInstance(instance.id);
+      });
+    }
+  };
+
   // Exit edit mode
   const handleDoneEditing = () => {
     updateUiSettings({ editMode: false });
@@ -356,6 +365,17 @@ const WidgetGrid = () => {
           title={language === 'ko' ? '위젯 추가' : 'Add Widget'}
         >
           <IoAdd />
+        </button>
+      )}
+
+      {/* Delete All Button */}
+      {isEditing && instances.length > 0 && (
+        <button
+          className={styles.deleteAllButton}
+          onClick={handleRemoveAllWidgets}
+          title={language === 'ko' ? '전체 삭제' : 'Delete All'}
+        >
+          <IoTrash />
         </button>
       )}
 

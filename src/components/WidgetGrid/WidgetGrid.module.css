@@ -232,6 +232,33 @@
   background: #2563eb;
 }
 
+/* Delete All Button */
+.deleteAllButton {
+  position: fixed;
+  bottom: 156px;
+  right: 24px;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1000;
+  pointer-events: auto;
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+  transition: all 0.2s ease;
+}
+
+.deleteAllButton:hover {
+  transform: scale(1.1);
+  background: #dc2626;
+}
+
 /* Done Button */
 .doneButton {
   position: fixed;
