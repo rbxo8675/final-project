@@ -1,4 +1,26 @@
+import { fetchSettingsFromApi, updateSettingsToApi } from '../services/settingsApi';
+
 const STORAGE_KEY = 'startpage-settings';
+
+// Sync status tracking
+let syncStatus = {
+  status: 'idle', // 'idle' | 'loading' | 'syncing' | 'error'
+  lastSync: null,
+  error: null
+};
+
+// Debounce timeout for saveSettings
+let saveTimeout = null;
+const SAVE_DEBOUNCE = 1000; // 1 second
+
+// Get current sync status
+export const getSyncStatus = () => ({ ...syncStatus });
+
+// Update sync status and notify listeners
+const updateSyncStatus = (updates) => {
+  syncStatus = { ...syncStatus, ...updates };
+  console.log('[Sync Status]', syncStatus);
+};
 
 // Default settings
 export const defaultSettings = {
@@ -55,29 +77,120 @@ export const defaultSettings = {
   weatherUnit: 'metric'
 };
 
-// Save settings to localStorage
+// Save settings to both localStorage (immediate) and MockAPI (debounced)
 export const saveSettings = (settings) => {
+  // Always save to localStorage immediately (cache layer)
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-    return true;
+    console.log('[Storage] Saved to localStorage (cache)');
   } catch (error) {
-    console.error('Failed to save settings:', error);
-    return false;
+    console.error('[Storage] Failed to save to localStorage:', error);
   }
+
+  // Debounced save to MockAPI
+  if (saveTimeout) {
+    clearTimeout(saveTimeout);
+  }
+
+  saveTimeout = setTimeout(async () => {
+    // Check if online (optional, MockAPI call will fail gracefully)
+    if (!navigator.onLine) {
+      console.log('[Storage] Offline - skipping MockAPI sync');
+      updateSyncStatus({
+        status: 'error',
+        error: 'Offline - changes saved locally'
+      });
+      return;
+    }
+
+    updateSyncStatus({ status: 'syncing' });
+
+    try {
+      await updateSettingsToApi(settings);
+      updateSyncStatus({
+        status: 'idle',
+        lastSync: Date.now(),
+        error: null
+      });
+      console.log('[Storage] Synced to MockAPI');
+    } catch (error) {
+      console.error('[Storage] Failed to sync to MockAPI:', error.message);
+      updateSyncStatus({
+        status: 'error',
+        error: `Sync failed: ${error.message}`
+      });
+      // Data is still safe in localStorage
+    }
+  }, SAVE_DEBOUNCE);
+
+  return true;
 };
 
-// Load settings from localStorage
-export const loadSettings = () => {
+// Load settings from MockAPI (with localStorage fallback)
+export const loadSettings = async () => {
+  updateSyncStatus({ status: 'loading', error: null });
+
+  // Get local settings first (for fallback and migration)
+  let localSettings = null;
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
-      const parsed = JSON.parse(saved);
-      // Merge with defaults to ensure all keys exist
-      return { ...defaultSettings, ...parsed };
+      localSettings = JSON.parse(saved);
     }
-    return defaultSettings;
   } catch (error) {
-    console.error('Failed to load settings:', error);
+    console.error('[Storage] Failed to read localStorage:', error);
+  }
+
+  // Try to fetch from MockAPI
+  try {
+    const apiSettings = await fetchSettingsFromApi();
+
+    // If API returned null (not configured), use localStorage
+    if (apiSettings === null) {
+      console.log('[Storage] MockAPI not configured, using localStorage');
+      updateSyncStatus({ status: 'idle' });
+      return { ...defaultSettings, ...localSettings };
+    }
+
+    // Merge API settings with defaults
+    const merged = { ...defaultSettings, ...apiSettings };
+
+    // Update localStorage cache
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+    } catch (error) {
+      console.error('[Storage] Failed to cache to localStorage:', error);
+    }
+
+    updateSyncStatus({
+      status: 'idle',
+      lastSync: Date.now(),
+      error: null
+    });
+
+    console.log('[Storage] Settings loaded from MockAPI');
+    return merged;
+  } catch (error) {
+    console.warn('[Storage] Failed to load from MockAPI, using localStorage:', error.message);
+
+    // Fallback to localStorage
+    if (localSettings) {
+      const merged = { ...defaultSettings, ...localSettings };
+      updateSyncStatus({
+        status: 'error',
+        error: `API error: ${error.message}`
+      });
+      console.log('[Storage] Settings loaded from localStorage (fallback)');
+      return merged;
+    }
+
+    // Last resort: return defaults
+    updateSyncStatus({
+      status: 'error',
+      error: 'Failed to load settings from any source'
+    });
+
+    console.log('[Storage] Using default settings');
     return defaultSettings;
   }
 };

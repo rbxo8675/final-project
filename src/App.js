@@ -10,6 +10,7 @@ import './App.css';
 // Inner component to use context
 const AppContent = () => {
   const {
+    isLoading,
     widgetStyle,
     uiSettings,
     backgroundMode,
@@ -91,6 +92,18 @@ const AppContent = () => {
   const handleRefresh = () => {
     backgroundRef.current?.refresh();
   };
+
+  // Show loading screen while initializing
+  if (isLoading) {
+    return (
+      <div className="App loading">
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+          <p>설정을 불러오는 중...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="App">

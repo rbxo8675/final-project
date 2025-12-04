@@ -267,21 +267,36 @@ const appReducer = (state, action) => {
 
 // Provider Component
 export const AppProvider = ({ children }) => {
-  // Lazy initialization - load from localStorage immediately
-  const [state, dispatch] = useReducer(appReducer, null, () => loadSettings());
+  // Start with default settings
+  const [state, dispatch] = useReducer(appReducer, defaultSettings);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Mark as initialized after first render
+  // Load settings from API on mount (async)
   useEffect(() => {
-    setIsInitialized(true);
+    const initializeSettings = async () => {
+      setIsLoading(true);
+      try {
+        const settings = await loadSettings(); // Now async
+        dispatch({ type: ACTIONS.SET_SETTINGS, payload: settings });
+      } catch (error) {
+        console.error('[AppContext] Failed to initialize settings:', error);
+        // State already has defaultSettings
+      } finally {
+        setIsInitialized(true);
+        setIsLoading(false);
+      }
+    };
+
+    initializeSettings();
   }, []);
 
-  // Save to localStorage whenever state changes (but not on initial load)
+  // Save to localStorage and MockAPI whenever state changes (but not on initial load)
   useEffect(() => {
-    if (isInitialized) {
+    if (isInitialized && !isLoading) {
       saveSettings(state);
     }
-  }, [state, isInitialized]);
+  }, [state, isInitialized, isLoading]);
 
   // Apply theme to document
   useEffect(() => {
@@ -477,6 +492,7 @@ export const AppProvider = ({ children }) => {
 
   const value = {
     ...state,
+    isLoading, // Expose loading state
     updateTheme,
     updateLanguage,
     updateWidgetStyle,
