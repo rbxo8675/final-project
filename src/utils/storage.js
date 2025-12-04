@@ -54,11 +54,11 @@ export const defaultSettings = {
     { id: 'quote-1', type: 'quote', settings: { type: 'bible' } }
   ],
 
-  // Widget layout
+  // Widget layout (12 cols x 8 rows grid)
   layout: [
-    { i: 'clock-1', x: 4, y: 2, w: 4, h: 4, minW: 2, minH: 2 },
-    { i: 'weather-1', x: 0, y: 0, w: 3, h: 4, minW: 2, minH: 3 },
-    { i: 'quote-1', x: 3, y: 6, w: 6, h: 2, minW: 3, minH: 2 }
+    { i: 'clock-1', x: 4, y: 2, w: 4, h: 3 },
+    { i: 'weather-1', x: 0, y: 0, w: 3, h: 3 },
+    { i: 'quote-1', x: 3, y: 5, w: 6, h: 2 }
   ],
 
   // Data

@@ -359,23 +359,26 @@ export const AppProvider = ({ children }) => {
     const id = `${type}-${Date.now()}`;
     const instance = { id, type, settings };
 
-    // Default layout positions for new widgets
-    const layoutDefaults = {
-      clock: { w: 4, h: 4, minW: 2, minH: 2 },
-      weather: { w: 3, h: 4, minW: 2, minH: 3 },
-      quote: { w: 6, h: 2, minW: 3, minH: 2 },
-      bookmarks: { w: 4, h: 4, minW: 2, minH: 2 },
-      todo: { w: 3, h: 4, minW: 2, minH: 3 },
-      sticky: { w: 3, h: 3, minW: 2, minH: 2 },
-      kanban: { w: 6, h: 4, minW: 4, minH: 3 }
+    // Default sizes for widgets (12 cols x 8 rows grid)
+    const sizeDefaults = {
+      clock: { w: 4, h: 3 },
+      weather: { w: 3, h: 3 },
+      quote: { w: 6, h: 2 },
+      bookmarks: { w: 3, h: 3 },
+      todo: { w: 3, h: 4 },
+      sticky: { w: 3, h: 3 },
+      kanban: { w: 6, h: 4 }
     };
 
-    const defaults = layoutDefaults[type] || { w: 2, h: 2, minW: 2, minH: 2 };
+    const size = sizeDefaults[type] || { w: 3, h: 3 };
+
+    // Layout item - position will be calculated by WidgetGrid
     const layoutItem = {
       i: id,
       x: 0,
-      y: Infinity, // Place at bottom
-      ...defaults
+      y: 0,
+      w: size.w,
+      h: size.h
     };
 
     dispatch({
