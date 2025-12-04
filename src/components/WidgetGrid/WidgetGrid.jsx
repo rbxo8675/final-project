@@ -97,12 +97,12 @@ const WidgetGrid = () => {
   const currentLayout = useMemo(() => layout || [], [layout]);
   const instances = useMemo(() => widgetInstances || [], [widgetInstances]);
 
-  // Calculate cell size based on window
+  // Calculate cell size based on window (square cells)
   useEffect(() => {
     const updateCellSize = () => {
-      const width = (window.innerWidth - GAP * (COLS + 1)) / COLS;
-      const height = (window.innerHeight - GAP * (ROWS + 1)) / ROWS;
-      setCellSize({ width, height });
+      // Calculate based on width to make square cells
+      const cellWidth = (window.innerWidth - GAP * (COLS + 1)) / COLS;
+      setCellSize({ width: cellWidth, height: cellWidth });
     };
 
     updateCellSize();
@@ -398,8 +398,8 @@ const WidgetGrid = () => {
         ref={gridRef}
         className={`${styles.grid} ${isEditing ? styles.editing : ''}`}
         style={{
-          gridTemplateColumns: `repeat(${COLS}, 1fr)`,
-          gridTemplateRows: `repeat(${ROWS}, 1fr)`,
+          gridTemplateColumns: `repeat(${COLS}, ${cellSize.width}px)`,
+          gridTemplateRows: `repeat(${ROWS}, ${cellSize.height}px)`,
           gap: `${GAP}px`,
           padding: `${GAP}px`
         }}
