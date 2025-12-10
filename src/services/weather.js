@@ -1,3 +1,5 @@
+//waeather.js
+
 const WEATHER_API = 'https://api.openweathermap.org/data/2.5';
 const API_KEY = process.env.REACT_APP_OPENWEATHER_API_KEY;
 
